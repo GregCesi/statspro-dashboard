@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>StatsPro — Dashboard PoC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --panel-soft: #fafbfc;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-muted: #94a3b8;
+  --line: #e8ebf0;
+  --line-soft: #f1f3f7;
+  --line-strong: #d4d8df;
+  --accent: #0f172a;
+  --accent-soft: #1e293b;
+  --primary: #3b82f6;
+  --primary-soft: #dbeafe;
+  --primary-deep: #1e40af;
+  --green: #16a34a;
+  --green-soft: #dcfce7;
+  --green-deep: #166534;
+  --orange: #ea580c;
+  --orange-soft: #ffedd5;
+  --orange-deep: #9a3412;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --red-deep: #991b1b;
+  --yellow-soft: #fef3c7;
+  --yellow-deep: #92400e;
+  --pink-soft: #fce7f3;
+  --pink-deep: #9d174d;
+  --violet-soft: #ede9fe;
+  --violet-deep: #5b21b6;
+  --indigo-soft: #e0e7ff;
+  --indigo-deep: #3730a3;
+  --emerald-soft: #d1fae5;
+  --emerald-deep: #065f46;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+  --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+*:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 3px; }
+
+body {
+  margin: 0; padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.005em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Header ─── */
+header {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #f8fafc;
+  padding: 18px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  z-index: 10;
+}
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+header h1 .logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 8px;
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.35);
+}
+header .sub {
+  font-size: 12px;
+  opacity: 0.65;
+  margin-top: 4px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+header .storage-badge {
+  font-size: 11px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  color: #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── KPI Bar ─── */
+.kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  padding: 18px 28px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.kpi {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.kpi::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--ink-muted);
+  opacity: 0.5;
+  transition: opacity var(--transition);
+}
+.kpi:hover { box-shadow: var(--shadow-md); border-color: var(--line-strong); }
+.kpi:hover::before { opacity: 1; }
+.kpi.green::before { background: var(--green); }
+.kpi.orange::before { background: var(--orange); }
+.kpi.red::before { background: var(--red); }
+.kpi.blue::before { background: var(--primary); }
+
+.kpi .label {
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.kpi .value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 6px;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.kpi .sub {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.kpi.green .value { color: var(--green); }
+.kpi.orange .value { color: var(--orange); }
+.kpi.red .value { color: var(--red); }
+.kpi.blue .value { color: var(--primary); }
+
+/* ─── Layout ─── */
+main { display: flex; min-height: calc(100vh - 130px); }
+
+/* ─── Sidebar ─── */
+aside.sidebar {
+  width: 290px;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 18px;
+  overflow-y: auto;
+  max-height: calc(100vh - 76px);
+  position: sticky;
+  top: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+aside.sidebar::-webkit-scrollbar { width: 6px; }
+aside.sidebar::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
+aside.sidebar::-webkit-scrollbar-track { background: transparent; }
+
+aside h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin: 18px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+aside h3:first-of-type { margin-top: 4px; }
+aside h3 svg { opacity: 0.6; }
+
+.search-box {
+  width: 100%;
+  padding: 10px 12px 10px 34px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 12px center;
+  transition: all var(--transition);
+}
+.search-box:hover { border-color: var(--line-strong); }
+.search-box:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: var(--panel);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.filter-group { display: flex; flex-direction: column; gap: 1px; }
+.filter-group label {
+  font-size: 12.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  transition: background-color var(--transition);
+  color: var(--ink);
+}
+.filter-group label:hover { background: var(--line-soft); }
+.filter-group label:has(input:checked) { background: var(--primary-soft); color: var(--primary-deep); font-weight: 500; }
+.filter-group input[type=checkbox] {
+  cursor: pointer;
+  width: 14px; height: 14px;
+  accent-color: var(--primary);
+}
+.filter-group .count {
+  color: var(--ink-muted);
+  font-size: 11px;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  padding: 2px 7px;
+  background: var(--line-soft);
+  border-radius: 999px;
+  min-width: 22px;
+  text-align: center;
+  transition: all var(--transition);
+}
+.filter-group label:has(input:checked) .count {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--primary-deep);
+}
+
+.toggle-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.toggle-btn {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--ink);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition);
+}
+.toggle-btn:hover { border-color: var(--line-strong); background: var(--line-soft); }
+.toggle-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.toggle-btn.active:hover { background: var(--accent-soft); }
+.toggle-btn svg { flex-shrink: 0; opacity: 0.75; }
+.toggle-btn.active svg { opacity: 1; }
+
+.reset-btn, .export-btn {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: var(--ink);
+  transition: all var(--transition);
+}
+.reset-btn:hover { background: var(--red-soft); border-color: var(--red); color: var(--red-deep); }
+.export-btn:hover { background: var(--green-soft); border-color: var(--green); color: var(--green-deep); }
+
+.num-range { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.num-range input[type=number] {
+  width: 64px; padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  transition: all var(--transition);
+}
+.num-range input[type=number]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+.num-range span { color: var(--ink-muted); font-weight: 500; }
+
+/* ─── Main content ─── */
+section.main {
+  flex: 1;
+  padding: 22px;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.chart-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px 16px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+}
+.chart-card:hover { box-shadow: var(--shadow); }
+.chart-card h3 {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chart-card h3 .meta {
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  background: var(--line-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.chart-wrap { position: relative; height: 260px; }
+.chart-wrap canvas { max-width: 100%; }
+
+.matrix-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.matrix-table th, .matrix-table td {
+  padding: 8px 10px;
+  text-align: center;
+  border-radius: 6px;
+}
+.matrix-table th {
+  background: var(--line-soft);
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.matrix-table td.label {
+  background: var(--line-soft);
+  font-weight: 600;
+  text-align: left;
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.matrix-cell {
+  cursor: default;
+  transition: opacity var(--transition);
+  font-weight: 600;
+  color: var(--ink);
+}
+.matrix-cell.zero { color: var(--ink-muted); font-weight: 400; opacity: 0.5; }
+.matrix-cell:not(.zero):hover { opacity: 0.85; }
+
+/* ─── Tableau détail ─── */
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 12px 18px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.table-toolbar .count-info b { color: var(--ink); font-weight: 600; }
+.table-toolbar .sort-info b { color: var(--ink); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+table.detail {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  font-size: 12.5px;
+  border: 1px solid var(--line);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+table.detail th {
+  background: var(--accent);
+  color: white;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: background-color var(--transition);
+}
+table.detail th:hover { background: var(--accent-soft); }
+table.detail th .arrow { margin-left: 6px; opacity: 0.4; font-size: 10px; }
+table.detail th.active .arrow { opacity: 1; color: #93c5fd; }
+table.detail td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+table.detail tbody tr:nth-child(odd) td { background: var(--panel-soft); }
+table.detail tbody tr:hover td { background: var(--primary-soft); }
+table.detail tbody tr.expanded td { background: var(--primary-soft); }
+table.detail tbody tr.detail-row td {
+  background: var(--panel) !important;
+  padding: 16px 18px;
+  cursor: default;
+  border-bottom: 2px solid var(--line);
+}
+table.detail tbody tr.detail-row .detail-block {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 6px 16px;
+  font-size: 12.5px;
+}
+table.detail tbody tr.detail-row .detail-block dt {
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+}
+table.detail tbody tr.detail-row .detail-block dd {
+  margin: 0;
+  white-space: pre-wrap;
+  color: var(--ink);
+  line-height: 1.55;
+}
+table.detail tbody tr.detail-row .detail-block dd.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  background: var(--line-soft);
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: var(--ink-soft);
+}
+
+/* ─── Pills ─── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+.pill-faisab-single { background: var(--green-soft); color: var(--green-deep); }
+.pill-faisab-combo { background: var(--orange-soft); color: var(--orange-deep); }
+.pill-faisab-aucune { background: var(--red-soft); color: var(--red-deep); }
+.pill-cout-gratuit { background: var(--emerald-soft); color: var(--emerald-deep); }
+.pill-cout-freemium { background: var(--yellow-soft); color: var(--yellow-deep); }
+.pill-cout-payant { background: var(--red-soft); color: var(--red-deep); }
+.pill-cout-indeterm { background: var(--line-soft); color: var(--ink-soft); }
+.pill-effort-trivial { background: var(--emerald-soft); color: var(--emerald-deep); }
+.pill-effort-modere { background: var(--yellow-soft); color: var(--yellow-deep); }
+.pill-effort-lourd { background: var(--red-soft); color: var(--red-deep); }
+.pill-effort-indeterm { background: var(--line-soft); color: var(--ink-soft); }
+.pill-vague-V1 { background: var(--green-soft); color: var(--green-deep); }
+.pill-vague-V2 { background: var(--primary-soft); color: var(--primary-deep); }
+.pill-vague-V3 { background: var(--orange-soft); color: var(--orange-deep); }
+.pill-vague-V4 { background: var(--red-soft); color: var(--red-deep); }
+.pill-fourn { background: var(--primary-soft); color: var(--primary-deep); }
+.pill-fourn[data-f="BallDontLie"] { background: var(--pink-soft); color: var(--pink-deep); }
+.pill-fourn[data-f="The Odds API"] { background: var(--violet-soft); color: var(--violet-deep); }
+.pill-fourn[data-f="Basketball-Reference"] { background: var(--yellow-soft); color: var(--yellow-deep); }
+.pill-fourn[data-f="Scraping"] { background: var(--indigo-soft); color: var(--indigo-deep); }
+.pill-fourn[data-f="Calcul interne"] { background: var(--emerald-soft); color: var(--emerald-deep); }
+.pill-fourn[data-f="Aucun"] { background: var(--red-soft); color: var(--red-deep); }
+.pill-fourn[data-f*=" + "] { background: var(--line-soft); color: var(--ink-soft); border: 1px dashed var(--line-strong); }
+
+/* ─── Empty state ─── */
+.empty-state {
+  text-align: center;
+  padding: 56px 20px;
+  color: var(--ink-muted);
+  font-style: normal;
+}
+.empty-state svg { margin-bottom: 12px; opacity: 0.4; }
+.empty-state .title { font-size: 14px; font-weight: 600; color: var(--ink-soft); margin-bottom: 4px; }
+.empty-state .sub { font-size: 12px; }
+
+/* ─── Cells ─── */
+.donee-cell { max-width: 360px; line-height: 1.45; }
+.num-cell {
+  text-align: right;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>
+      <span class="logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </span>
+      STATSPRO — Dashboard PoC
+    </h1>
+    <div class="sub">163 données candidates · cockpit d'arbitrage · filtres combinables</div>
+  </div>
+  <span class="storage-badge">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    État sauvegardé
+  </span>
+</header>
+
+<div class="kpi-bar">
+  <div class="kpi blue">
+    <div class="label">Lignes filtrées</div>
+    <div class="value" id="kpi-count">163</div>
+    <div class="sub" id="kpi-count-sub">sur 163 (100%)</div>
+  </div>
+  <div class="kpi green">
+    <div class="label">Une seule API</div>
+    <div class="value" id="kpi-single">131</div>
+    <div class="sub" id="kpi-single-pct">80% du résultat</div>
+  </div>
+  <div class="kpi orange">
+    <div class="label">Combinaison</div>
+    <div class="value" id="kpi-combo">12</div>
+    <div class="sub" id="kpi-combo-pct">7%</div>
+  </div>
+  <div class="kpi red">
+    <div class="label">Aucune API</div>
+    <div class="value" id="kpi-aucune">20</div>
+    <div class="sub" id="kpi-aucune-pct">12%</div>
+  </div>
+  <div class="kpi green">
+    <div class="label">Quick Wins (V1)</div>
+    <div class="value" id="kpi-quick">62</div>
+    <div class="sub" id="kpi-quick-pct">38% du résultat</div>
+  </div>
+  <div class="kpi green">
+    <div class="label">Gratuit</div>
+    <div class="value" id="kpi-gratuit">—</div>
+    <div class="sub" id="kpi-gratuit-pct">—</div>
+  </div>
+</div>
+
+<main>
+  <aside class="sidebar">
+    <input type="text" id="search" class="search-box" placeholder="Recherche full-text…">
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Toggles rapides</h3>
+    <div class="toggle-row">
+      <button class="toggle-btn" data-toggle="quickwins"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Quick Wins seulement (V1)</button>
+      <button class="toggle-btn" data-toggle="hidev4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Cacher les bloqués (V4)</button>
+      <button class="toggle-btn" data-toggle="freeonly"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Gratuit seulement</button>
+      <button class="toggle-btn" data-toggle="prematchonly"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pre-match seulement</button>
+      <button class="toggle-btn" data-toggle="liveonly"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg> Live seulement</button>
+      <button class="toggle-btn" data-toggle="determined"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Coût ET Effort déterminés</button>
+    </div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Vague de PoC</h3>
+    <div class="filter-group" data-axis="vague"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Faisabilité</h3>
+    <div class="filter-group" data-axis="faisabilite"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Fournisseur principal</h3>
+    <div class="filter-group" data-axis="fournisseur"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Coût</h3>
+    <div class="filter-group" data-axis="cout"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Effort</h3>
+    <div class="filter-group" data-axis="effort"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Type</h3>
+    <div class="filter-group" data-axis="type"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Scope</h3>
+    <div class="filter-group" data-axis="scope"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Catégorie</h3>
+    <div class="filter-group" data-axis="categorie"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>Numéro #</h3>
+    <div class="num-range">
+      <input type="number" id="num-min" min="1" max="163" value="1">
+      <span>→</span>
+      <input type="number" id="num-max" min="1" max="163" value="163">
+    </div>
+
+    <button class="reset-btn" id="reset-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Réinitialiser tous les filtres</button>
+    <button class="export-btn" id="export-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exporter CSV (filtré)</button>
+  </aside>
+
+  <section class="main">
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Faisabilité <span class="meta" id="meta-faisab">—</span></h3>
+        <div class="chart-wrap"><canvas id="chart-faisab"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Fournisseur principal <span class="meta" id="meta-fourn">—</span></h3>
+        <div class="chart-wrap"><canvas id="chart-fourn"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Matrice Coût × Effort <span class="meta" id="meta-matrix">—</span></h3>
+        <table class="matrix-table" id="matrix-table"></table>
+        <div class="legend-row">
+          <span class="item"><span class="swatch" style="background: var(--green-soft)"></span>peu de lignes</span>
+          <span class="item"><span class="swatch" style="background: var(--orange-soft)"></span>volumeintermediaire</span>
+          <span class="item"><span class="swatch" style="background: var(--red-soft)"></span>concentration</span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Catégorie × Faisabilité (empilé) <span class="meta" id="meta-cat">—</span></h3>
+        <div class="chart-wrap"><canvas id="chart-cat"></canvas></div>
+      </div>
+    </div>
+
+    <div class="table-toolbar">
+      <div class="count-info"><b id="tbl-count">163</b> lignes affichées · cliquer une ligne pour voir Notes complètes · cliquer une colonne pour trier</div>
+      <div><span class="sort-info">Tri : <b id="sort-info">#  ↑</b></span></div>
+    </div>
+    <table class="detail" id="detail-table">
+      <thead>
+        <tr id="detail-head"></tr>
+      </thead>
+      <tbody id="detail-body"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+const DATA = [{"num":1,"categorie":"Roster & Disponibilité","donnee":"Statut injury par joueur (questionable / probable / doubtful / out)","type":"Pre-match","scope":"Joueur","faisabilite":"Combinaison","fournisseur":"BallDontLie + Scraping","endpoint":"BallDontLie + scraping NBA Injury Report","cout":"freemium","effort":"modéré","vague":"V3","notes":"BallDontLie ALL-STAR (9.99 $/mo) expose /nba/v1/player_injuries. Le rapport officiel NBA est publié en PDF (5pm ET veille + maj H-1) ; le package Python nbainjuries le parse. SportsDataIO le ferait mieux mais le free trial est scrambled (données brouillées). Combiner BallDontLie pour la fiabilité + scraping du rapport officiel pour les statuts les plus à jour.","api_source":"BallDontLie + scraping NBA Injury Report → Combinaison de plusieurs APIs nécessaire"},{"num":2,"categorie":"Roster & Disponibilité","donnee":"Five de départ officiel (annoncé 30-40 min avant le match)","type":"Pre-match","scope":"Match","faisabilite":"Combinaison","fournisseur":"BallDontLie + SportsDataIO","endpoint":"SportsDataIO StartingLineupsByDate + BallDontLie Lineups","cout":"gratuit","effort":"lourd","vague":"V3","notes":"Donnée DIFFICILE en gratuit. SportsDataIO confirme les starting lineups quelques minutes après publication officielle (payant). BallDontLie /v1/lineups n'est dispo qu'une fois le match commencé (pas pre-match). En free, scraping de Rotowire ou Lineups.com requis pour avoir le 5 de départ 30-40 min avant tip-off.","api_source":"SportsDataIO StartingLineupsByDate + BallDontLie Lineups → Combinaison de plusieurs APIs nécessaire"},{"num":3,"categorie":"Roster & Disponibilité","donnee":"Liste joueurs confirmés absents","type":"Pre-match","scope":"Match","faisabilite":"Combinaison","fournisseur":"BallDontLie + Scraping","endpoint":"BallDontLie injuries + scraping NBA Injury Report","cout":"gratuit","effort":"indéterminé","vague":"V3","notes":"Filtrer par status='Out' sur le rapport officiel NBA. BallDontLie agrège mais avec léger délai. Sample propre obtenu en croisant les deux sources.","api_source":"BallDontLie injuries + scraping NBA Injury Report → Combinaison de plusieurs APIs nécessaire"},{"num":4,"categorie":"Roster & Disponibilité","donnee":"Liste joueurs statut incertain","type":"Pre-match","scope":"Match","faisabilite":"Combinaison","fournisseur":"BallDontLie + Scraping","endpoint":"BallDontLie injuries + scraping NBA Injury Report","cout":"gratuit","effort":"trivial","vague":"V3","notes":"Statuts Questionable / Doubtful / Probable. Même source que #3, simple filtre sur le statut.","api_source":"BallDontLie injuries + scraping NBA Injury Report → Combinaison de plusieurs APIs nécessaire"},{"num":5,"categorie":"Roster & Disponibilité","donnee":"Liste joueurs confirmés présents","type":"Pre-match","scope":"Match","faisabilite":"Combinaison","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie + NBA Stats commonteamroster","cout":"gratuit","effort":"trivial","vague":"V3","notes":"Pas d'endpoint direct 'présents'. Calcul = roster team complet (NBA Stats commonteamroster) MOINS joueurs avec statut Out (BallDontLie injuries).","api_source":"BallDontLie + NBA Stats commonteamroster → Combinaison de plusieurs APIs nécessaire"},{"num":6,"categorie":"Roster & Disponibilité","donnee":"Minutes prévues par joueur (estimation)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playergamelogs (calcul moyenne mobile)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Aucune API gratuite ne donne une 'projection' fiable. SportsDataIO fournit des projections payantes. Calcul possible côté client : moyenne mobile sur les 10 derniers matchs depuis playergamelogs. À ajuster manuellement si rotation perturbée par blessures.","api_source":"NBA Stats playergamelogs (calcul moyenne mobile) → Une seule API suffit"},{"num":7,"categorie":"Roster & Disponibilité","donnee":"Rotation du coach — nombre de joueurs utilisés par match par poste","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashlineups + boxscoretraditionalv3","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Endpoints teamdashlineups et boxscoreplayertrackv2 permettent d'extraire les rotations effectives. À calculer côté client : pas d'endpoint 'rotation' prêt-à-l'emploi. Position des joueurs souvent simplifiée (G/F/C) dans NBA Stats.","api_source":"NBA Stats teamdashlineups + boxscoretraditionalv3 → Une seule API suffit"},{"num":8,"categorie":"Roster & Disponibilité","donnee":"Minutes moyennes par poste sur la saison","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashplayerstats (filtre par position)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Endpoint expose minutes par joueur, agrégation par position côté client. Fiabilité limitée car le champ 'POSITION' dans NBA Stats est souvent simplifié et ne reflète pas toujours le rôle réel.","api_source":"NBA Stats leaguedashplayerstats (filtre par position) → Une seule API suffit"},{"num":9,"categorie":"Roster & Disponibilité","donnee":"% des points venant du banc","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamstats (StarterBench=Bench)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Le paramètre StarterBench filtre titulaires/banc nativement. Endpoint éprouvé et stable.","api_source":"NBA Stats leaguedashteamstats (StarterBench=Bench) → Une seule API suffit"},{"num":10,"categorie":"Roster & Disponibilité","donnee":"Points / rebonds / passes moyens des remplaçants","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamstats (StarterBench=Bench)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Même endpoint que #9. Les champs PTS, REB, AST sont nativement présents dans la réponse.","api_source":"NBA Stats leaguedashteamstats (StarterBench=Bench) → Une seule API suffit"},{"num":11,"categorie":"Roster & Disponibilité","donnee":"Minutes moyennes des remplaçants","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamstats (StarterBench=Bench)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Idem #9-10. Champ MIN dans la réponse.","api_source":"NBA Stats leaguedashteamstats (StarterBench=Bench) → Une seule API suffit"},{"num":12,"categorie":"Roster & Disponibilité","donnee":"Stats du banc à domicile vs extérieur","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamstats (Location + StarterBench)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Combiner les filtres Location=Home/Road avec StarterBench=Bench pour obtenir les splits banc home/away.","api_source":"NBA Stats leaguedashteamstats (Location + StarterBench) → Une seule API suffit"},{"num":13,"categorie":"Roster & Disponibilité","donnee":"Stats du banc en back-to-back","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamgamelogs + leaguedashteamstats (calcul)","cout":"gratuit","effort":"lourd","vague":"V2","notes":"Pas de filtre B2B natif. Détecter B2B via dates du schedule, puis croiser côté client avec gamelogs filtrés bench. Calcul possible mais lourd.","api_source":"NBA Stats teamgamelogs + leaguedashteamstats (calcul) → Une seule API suffit"},{"num":14,"categorie":"Roster & Disponibilité","donnee":"Stats du banc quand un titulaire est absent","type":"Pre-match","scope":"Équipe","faisabilite":"Combinaison","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashlineups + injury history","cout":"gratuit","effort":"lourd","vague":"V3","notes":"Nécessite croiser historique blessures (BallDontLie ou scraping) avec game logs. Pas d'endpoint dédié. Calcul lourd : pour chaque match où un titulaire X était absent, agréger les stats du banc.","api_source":"NBA Stats leaguedashlineups + injury history → Combinaison de plusieurs APIs nécessaire"},{"num":15,"categorie":"Résultats & Matchs","donnee":"Score final par match (saison en cours)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie /games ou NBA Stats leaguegamelog","cout":"freemium","effort":"trivial","vague":"V2","notes":"Trivial. BallDontLie free tier suffit. Endpoint /games retourne home_team_score et visitor_team_score.","api_source":"BallDontLie /games ou NBA Stats leaguegamelog → Une seule API suffit"},{"num":16,"categorie":"Résultats & Matchs","donnee":"Score par quart-temps Q1 / Q2 / Q3 / Q4 par match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie","endpoint":"BallDontLie /games (champs home_q1..q4)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs natifs home_q1, home_q2, home_q3, home_q4 (et OT) dans la réponse /games. Aussi disponible via NBA Stats boxscoresummaryv2.","api_source":"BallDontLie /games (champs home_q1..q4) → Une seule API suffit"},{"num":17,"categorie":"Résultats & Matchs","donnee":"Victoire ou défaite par quart-temps","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie","endpoint":"BallDontLie /games (calcul booléen)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Calcul côté client à partir des scores par quart : (home_qN > visitor_qN) ?","api_source":"BallDontLie /games (calcul booléen) → Une seule API suffit"},{"num":18,"categorie":"Résultats & Matchs","donnee":"Adversaire à chaque match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie /games ou NBA Stats leaguegamelog","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Donnée de base présente dans tout endpoint games.","api_source":"BallDontLie /games ou NBA Stats leaguegamelog → Une seule API suffit"},{"num":19,"categorie":"Résultats & Matchs","donnee":"Domicile ou extérieur par match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie /games ou NBA Stats leaguegamelog","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Donnée de base. Champ 'home_team_id' / 'visitor_team_id' permet de déterminer le statut domicile/extérieur pour une équipe donnée.","api_source":"BallDontLie /games ou NBA Stats leaguegamelog → Une seule API suffit"},{"num":20,"categorie":"Résultats & Matchs","donnee":"Classement de l'adversaire à la date du match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguestandingsv3 (snapshot daté, calcul)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Endpoint leaguestandings accepte un paramètre Season mais pas de filtrage par date intra-saison. Pour des dates passées, il faut snapshoter quotidiennement OU recalculer en cumulant les résultats jusqu'à la date cible.","api_source":"NBA Stats leaguestandingsv3 (snapshot daté, calcul) → Une seule API suffit"},{"num":21,"categorie":"Résultats & Matchs","donnee":"Liste des joueurs présents et absents par match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoretraditionalv3 (joueurs DNP)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Le box score liste tous les joueurs du roster ; ceux non-DNP n'ont pas de stats. Filtre côté client sur le champ COMMENT (DNP-CD, DNP-Injury, etc.).","api_source":"NBA Stats boxscoretraditionalv3 (joueurs DNP) → Une seule API suffit"},{"num":22,"categorie":"Résultats & Matchs","donnee":"Date et heure de chaque match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie /games (datetime) ou NBA Stats scheduleleaguev2","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Trivial. Datetime UTC retourné nativement, à convertir en heure locale arène.","api_source":"BallDontLie /games (datetime) ou NBA Stats scheduleleaguev2 → Une seule API suffit"},{"num":23,"categorie":"Résultats & Matchs","donnee":"Nombre de jours de repos avant chaque match","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguegamelog (calcul)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"À calculer côté client : différence entre date du match courant et date du match précédent. Pas d'endpoint dédié.","api_source":"NBA Stats leaguegamelog (calcul) → Une seule API suffit"},{"num":24,"categorie":"Résultats & Matchs","donnee":"Back-to-back détecté (booléen)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats / BallDontLie (calcul)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Calcul booléen simple : back_to_back = (jours_repos == 0).","api_source":"NBA Stats / BallDontLie (calcul) → Une seule API suffit"},{"num":25,"categorie":"Résultats & Matchs","donnee":"Bilan de l'équipe en back-to-back (V/D + stats)","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashboardbygamesplits","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint propose des splits ; B2B à filtrer côté client par dates ou via le split DaysRest=0.","api_source":"NBA Stats teamdashboardbygamesplits → Une seule API suffit"},{"num":26,"categorie":"Résultats & Matchs","donnee":"Bilan selon jours de repos : 1 / 2 / 3+ jours","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashboardbygamesplits (split DaysRest)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Endpoint expose le split DaysRest nativement (0, 1, 2, 3+ jours).","api_source":"NBA Stats teamdashboardbygamesplits (split DaysRest) → Une seule API suffit"},{"num":27,"categorie":"Classement & Standings","donnee":"Position actuelle dans la conférence","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie standings ou NBA Stats leaguestandingsv3","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Trivial. Champ 'CONFERENCE_RANK'.","api_source":"BallDontLie standings ou NBA Stats leaguestandingsv3 → Une seule API suffit"},{"num":28,"categorie":"Classement & Standings","donnee":"Bilan victoires / défaites total","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie ou NBA Stats","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Trivial. Champs WINS et LOSSES.","api_source":"BallDontLie ou NBA Stats → Une seule API suffit"},{"num":29,"categorie":"Classement & Standings","donnee":"Bilan victoires / défaites à domicile","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguestandingsv3 (champs HOME/ROAD)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs HOME et ROAD natifs dans standings v3.","api_source":"NBA Stats leaguestandingsv3 (champs HOME/ROAD) → Une seule API suffit"},{"num":30,"categorie":"Classement & Standings","donnee":"Bilan victoires / défaites à l'extérieur","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguestandingsv3","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Idem #29. Champ ROAD.","api_source":"NBA Stats leaguestandingsv3 → Une seule API suffit"},{"num":31,"categorie":"Classement & Standings","donnee":"Écart de matchs avec le 1er de conférence","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings (calcul)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ CONFERENCE_GAMES_BACK ou calcul à partir des wins/losses du leader de conférence.","api_source":"NBA Stats standings (calcul) → Une seule API suffit"},{"num":32,"categorie":"Classement & Standings","donnee":"Écart de matchs avec le 8ème (playoffs)","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings (calcul)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Calcul côté client à partir des wins/losses du 8e de conférence (formule games_behind classique).","api_source":"NBA Stats standings (calcul) → Une seule API suffit"},{"num":33,"categorie":"Classement & Standings","donnee":"Écart de matchs avec le 10ème (play-in)","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings (calcul)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Même calcul que #32 mais sur le 10e de conférence (limite play-in).","api_source":"NBA Stats standings (calcul) → Une seule API suffit"},{"num":34,"categorie":"Classement & Standings","donnee":"Position dans la division","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings (champ DIVISION_RANK)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ DIVISION_RANK natif.","api_source":"NBA Stats standings (champ DIVISION_RANK) → Une seule API suffit"},{"num":35,"categorie":"Classement & Standings","donnee":"Seed playoff actuel + adversaire probable au 1er tour","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings (calcul bracket)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Calcul de bracket possible côté client (1v8, 2v7…). Le bracket officiel n'est publié qu'à la fin de la saison régulière par la NBA, donc en cours de saison c'est une projection.","api_source":"NBA Stats standings (calcul bracket) → Une seule API suffit"},{"num":36,"categorie":"Classement & Standings","donnee":"% de chance d'obtenir un draft pick selon la position au classement","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference scraping (Playoff/Draft Probabilities)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Pas d'API publique. Bbref publie un Playoff Probabilities Report (simulations Monte-Carlo). Tankathon est une autre source à scraper. Aucun endpoint structuré.","api_source":"Basketball-Reference scraping (Playoff/Draft Probabilities) → Une seule API suffit"},{"num":37,"categorie":"Classement & Standings","donnee":"Classement historique des deux équipes à la date de chaque match passé","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings dated (calcul à partir gamelogs)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"À reconstruire en agrégeant les gamelogs jusqu'à la date du match — pas d'endpoint historique daté natif fiable. Coûteux en requêtes.","api_source":"NBA Stats standings dated (calcul à partir gamelogs) → Une seule API suffit"},{"num":38,"categorie":"Classement & Standings","donnee":"Classement complet de la conférence Est","type":"Pre-match","scope":"Ligue","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie ou NBA Stats leaguestandingsv3","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Trivial. Filtre Conference=East.","api_source":"BallDontLie ou NBA Stats leaguestandingsv3 → Une seule API suffit"},{"num":39,"categorie":"Classement & Standings","donnee":"Classement complet de la conférence Ouest","type":"Pre-match","scope":"Ligue","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie ou NBA Stats leaguestandingsv3","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Trivial. Filtre Conference=West.","api_source":"BallDontLie ou NBA Stats leaguestandingsv3 → Une seule API suffit"},{"num":40,"categorie":"Rythme & Pace","donnee":"Pace (possessions / 48 min) de chaque équipe sur la saison","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamstats (MeasureType=Advanced, champ PACE)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ PACE natif dans MeasureType=Advanced. BallDontLie GOAT advanced stats v2 (since 2015) le donne aussi.","api_source":"NBA Stats leaguedashteamstats (MeasureType=Advanced, champ PACE) → Une seule API suffit"},{"num":41,"categorie":"Rythme & Pace","donnee":"Pace sur les derniers matchs (rolling)","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamgamelogs (calcul moyenne mobile)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Calcul de moyenne mobile sur game logs avancés (LastNGames=5, 10…). Endpoint dédié inexistant.","api_source":"NBA Stats teamgamelogs (calcul moyenne mobile) → Une seule API suffit"},{"num":42,"categorie":"Rythme & Pace","donnee":"Pace lors des confrontations directes historiques entre les deux équipes","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoreadvancedv3 historique","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Récupérer les game IDs des H2H (leaguegamefinder filtré team1/team2) puis appeler boxscoreadvanced sur chacun pour le PACE.","api_source":"NBA Stats boxscoreadvancedv3 historique → Une seule API suffit"},{"num":43,"categorie":"Rythme & Pace","donnee":"Temps de possession moyen par attaque par équipe","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashptstats (PtMeasureType=Possessions)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint tracking provient de Second Spectrum, exposé gratuitement via NBA Stats. Champs TIME_OF_POSS et AVG_SEC_PER_TOUCH.","api_source":"NBA Stats leaguedashptstats (PtMeasureType=Possessions) → Une seule API suffit"},{"num":44,"categorie":"Rythme & Pace","donnee":"Points marqués en contre-attaque / transition par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats + Synergy","endpoint":"NBA Stats synergyplaytypes (play_type=Transition)","cout":"payant","effort":"indéterminé","vague":"V2","notes":"Endpoint Synergy filtré sur PlayType=Transition. Provient de Synergy Sports, exposé via NBA Stats.","api_source":"NBA Stats synergyplaytypes (play_type=Transition) → Une seule API suffit"},{"num":45,"categorie":"Rythme & Pace","donnee":"Points encaissés en contre-attaque par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats + Synergy","endpoint":"NBA Stats synergyplaytypes (TypeGrouping=defensive, Transition)","cout":"payant","effort":"indéterminé","vague":"V2","notes":"Idem #44 côté défense. Filtre TypeGrouping=defensive.","api_source":"NBA Stats synergyplaytypes (TypeGrouping=defensive, Transition) → Une seule API suffit"},{"num":46,"categorie":"Rythme & Pace","donnee":"Rebonds offensifs par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs (NBA Stats / BallDontLie / API-Sports)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ OREB.","api_source":"Toutes APIs (NBA Stats / BallDontLie / API-Sports) → Une seule API suffit"},{"num":47,"categorie":"Rythme & Pace","donnee":"Points sur secondes chances par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamstats (MeasureType=Misc, champ PTS_2ND_CHANCE)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ PTS_2ND_CHANCE dans MeasureType=Misc.","api_source":"NBA Stats leaguedashteamstats (MeasureType=Misc, champ PTS_2ND_CHANCE) → Une seule API suffit"},{"num":48,"categorie":"Rythme & Pace","donnee":"Turnovers par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ TOV.","api_source":"Toutes APIs → Une seule API suffit"},{"num":49,"categorie":"Rythme & Pace","donnee":"Interceptions (steals) par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ STL.","api_source":"Toutes APIs → Une seule API suffit"},{"num":50,"categorie":"Rythme & Pace","donnee":"Contres (blocks) par match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ BLK.","api_source":"Toutes APIs → Une seule API suffit"},{"num":51,"categorie":"Rythme & Pace","donnee":"Pace à domicile vs à l'extérieur","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashboardbygeneralsplits (Location split)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Splits Home/Road natifs avec MeasureType=Advanced (champ PACE).","api_source":"NBA Stats teamdashboardbygeneralsplits (Location split) → Une seule API suffit"},{"num":52,"categorie":"Rythme & Pace","donnee":"Pace en back-to-back","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashboardbygamesplits (DaysRest=0)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Filtre DaysRest=0 + MeasureType=Advanced.","api_source":"NBA Stats teamdashboardbygamesplits (DaysRest=0) → Une seule API suffit"},{"num":53,"categorie":"Rythme & Pace","donnee":"Efficacité offensive après temps mort","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"NBA Stats + Scraping","endpoint":"PBP Stats scraping ou calcul depuis NBA Stats playbyplayv3","cout":"gratuit","effort":"trivial","vague":"V4","notes":"Aucun endpoint dédié 'after timeout'. PBPStats.com agrège mais en scraping. À calculer à partir du play-by-play en détectant les timeouts puis la possession suivante. Coûteux.","api_source":"PBP Stats scraping ou calcul depuis NBA Stats playbyplayv3 → Aucune API fiable"},{"num":54,"categorie":"Confrontations directes (H2H)","donnee":"Score final des 5 dernières confrontations en saison régulière","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie /games (filtre teams) ou NBA Stats leaguegamefinder","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Filtre par team1/team2. Trivial.","api_source":"BallDontLie /games (filtre teams) ou NBA Stats leaguegamefinder → Une seule API suffit"},{"num":55,"categorie":"Confrontations directes (H2H)","donnee":"Score par quart Q1/Q2/Q3/Q4 de chaque confrontation","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie","endpoint":"BallDontLie /games (champs q1-q4)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs natifs présents dans /games.","api_source":"BallDontLie /games (champs q1-q4) → Une seule API suffit"},{"num":56,"categorie":"Confrontations directes (H2H)","donnee":"Feuille de match complète (stats tous les joueurs) par confrontation","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats boxscoretraditionalv3 ou BallDontLie /box_scores","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Disponible. Une requête par game ID des H2H.","api_source":"NBA Stats boxscoretraditionalv3 ou BallDontLie /box_scores → Une seule API suffit"},{"num":57,"categorie":"Confrontations directes (H2H)","donnee":"Compos des deux équipes lors de chaque confrontation","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoresummaryv2 (StartingLineups historique)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Lineup de départ extrait du box score historique (champ START_POSITION sur la table PlayerStats).","api_source":"NBA Stats boxscoresummaryv2 (StartingLineups historique) → Une seule API suffit"},{"num":58,"categorie":"Confrontations directes (H2H)","donnee":"Joueurs absents lors de chaque confrontation","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats box score (joueurs DNP)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Présence DNP dans box score (champ COMMENT).","api_source":"NBA Stats box score (joueurs DNP) → Une seule API suffit"},{"num":59,"categorie":"Confrontations directes (H2H)","donnee":"Classement des deux équipes à la date de chaque confrontation","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats standings dated (calcul)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Voir #37 — à reconstituer via cumul des résultats jusqu'à la date.","api_source":"NBA Stats standings dated (calcul) → Une seule API suffit"},{"num":60,"categorie":"Confrontations directes (H2H)","donnee":"Score final des confrontations en playoffs","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguegamefinder (SeasonType=Playoffs)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Filtre SeasonType=Playoffs natif.","api_source":"NBA Stats leaguegamefinder (SeasonType=Playoffs) → Une seule API suffit"},{"num":61,"categorie":"Confrontations directes (H2H)","donnee":"Score par quart des confrontations en playoffs","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoresummaryv2","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #16 mais filtré SeasonType=Playoffs.","api_source":"NBA Stats boxscoresummaryv2 → Une seule API suffit"},{"num":62,"categorie":"Confrontations directes (H2H)","donnee":"Score de la série (si série playoff)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguegamefinder (calcul agrégé par série)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Pas d'endpoint série dédié. Calcul d'agrégation côté client : grouper les game IDs d'une même série.","api_source":"NBA Stats leaguegamefinder (calcul agrégé par série) → Une seule API suffit"},{"num":63,"categorie":"Confrontations directes (H2H)","donnee":"Pace lors des confrontations directes","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoreadvancedv3","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Doublon de #42.","api_source":"NBA Stats boxscoreadvancedv3 → Une seule API suffit"},{"num":64,"categorie":"Fatigue & Voyage","donnee":"Ville du dernier match joué","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats teamgamelogs ou BallDontLie","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Déduit du schedule (l'arène = la ville). Calcul côté client à partir du dernier match.","api_source":"NBA Stats teamgamelogs ou BallDontLie → Une seule API suffit"},{"num":65,"categorie":"Fatigue & Voyage","donnee":"Distance parcourue depuis le dernier match (km)","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"Calcul interne","endpoint":"Calcul interne (table lat/long arènes + Haversine)","cout":"gratuit","effort":"modéré","vague":"V4","notes":"Aucune API ne fournit de distance. À calculer avec formule Haversine sur coordonnées des 30 arènes (table statique à constituer une fois pour toutes — ~1 jour de dev).","api_source":"Calcul interne (table lat/long arènes + Haversine) → Aucune API fiable"},{"num":66,"categorie":"Fatigue & Voyage","donnee":"Nombre de fuseaux horaires traversés","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"Calcul interne","endpoint":"Calcul interne (table timezones arènes)","cout":"gratuit","effort":"indéterminé","vague":"V4","notes":"Idem #65 — table statique des timezones par franchise. Calcul côté client.","api_source":"Calcul interne (table timezones arènes) → Aucune API fiable"},{"num":67,"categorie":"Fatigue & Voyage","donnee":"Nombre de jours de repos depuis le dernier match","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats / BallDontLie (calcul)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Doublon de #23.","api_source":"NBA Stats / BallDontLie (calcul) → Une seule API suffit"},{"num":68,"categorie":"Fatigue & Voyage","donnee":"Nombre de matchs joués sur les 7 derniers jours","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamgamelogs (calcul comptage glissant)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Comptage glissant sur fenêtre 7j à partir des dates de matchs.","api_source":"NBA Stats teamgamelogs (calcul comptage glissant) → Une seule API suffit"},{"num":69,"categorie":"Fatigue & Voyage","donnee":"Nombre de matchs joués sur les 14 derniers jours","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamgamelogs (calcul comptage glissant)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #68 sur fenêtre 14j.","api_source":"NBA Stats teamgamelogs (calcul comptage glissant) → Une seule API suffit"},{"num":70,"categorie":"Fatigue & Voyage","donnee":"Heure du match (locale)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie","endpoint":"BallDontLie /games (datetime UTC)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Datetime UTC à convertir en local via timezone arène (table statique).","api_source":"BallDontLie /games (datetime UTC) → Une seule API suffit"},{"num":71,"categorie":"Fatigue & Voyage","donnee":"Stats équipe selon matchs tard le soir (historique)","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats schedule + gamelogs (calcul groupement par tranche horaire)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Pas de filtre natif 'late game'. À calculer côté client (grouper par tranche horaire ex. >21h locale). Échantillon souvent faible donc fiabilité statistique limitée.","api_source":"NBA Stats schedule + gamelogs (calcul groupement par tranche horaire) → Une seule API suffit"},{"num":72,"categorie":"Style de jeu & Coach","donnee":"Bilan victoires / défaites du coach en saison régulière","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference scraping (page Coach)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Pas d'API publique gratuite. Bbref /coaches/coach.html scrappable. SportsDataIO le fournit en payant.","api_source":"Basketball-Reference scraping (page Coach) → Une seule API suffit"},{"num":73,"categorie":"Style de jeu & Coach","donnee":"Bilan victoires / défaites du coach en playoffs","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference scraping","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #72 mais splits playoffs présents sur la page coach.","api_source":"Basketball-Reference scraping → Une seule API suffit"},{"num":74,"categorie":"Style de jeu & Coach","donnee":"Historique confrontations coach vs coach adverse (V/D)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference scraping (calcul)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Reconstruire en croisant historique des entraîneurs (Bbref) avec game logs. Pas d'endpoint direct.","api_source":"Basketball-Reference scraping (calcul) → Une seule API suffit"},{"num":75,"categorie":"Style de jeu & Coach","donnee":"Feuille de match de chaque confrontation entre les deux coachs","type":"Pre-match","scope":"Match","faisabilite":"Combinaison","fournisseur":"Basketball-Reference + NBA Stats","endpoint":"NBA Stats box scores + Basketball-Reference","cout":"gratuit","effort":"indéterminé","vague":"V3","notes":"Identifier les game IDs où les deux coachs étaient en poste (Bbref pour dates de prise de poste), puis box scores via NBA Stats sur chaque match identifié.","api_source":"NBA Stats box scores + Basketball-Reference → Combinaison de plusieurs APIs nécessaire"},{"num":76,"categorie":"Style de jeu & Coach","donnee":"Lineups utilisés + stats (pts/reb/ast/+/-) par lineup","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashlineups (GroupQuantity=5)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint complet, paramètre GroupQuantity=5 pour 5-man lineups. Champs PTS, REB, AST, PLUS_MINUS natifs.","api_source":"NBA Stats teamdashlineups (GroupQuantity=5) → Une seule API suffit"},{"num":77,"categorie":"Style de jeu & Coach","donnee":"Stats dans les 5 dernières minutes à moins de 5 points (clutch)","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamclutch","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Endpoint dédié 'clutch' (5 dernières min, écart ≤5 pts). BallDontLie GOAT advanced stats v2 expose aussi des splits clutch.","api_source":"NBA Stats leaguedashteamclutch → Une seule API suffit"},{"num":78,"categorie":"Style de jeu & Coach","donnee":"Stats des 2 dernières minutes de chaque quart-temps","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"NBA Stats","endpoint":"NBA Stats playbyplayv3 (reconstruction)","cout":"gratuit","effort":"indéterminé","vague":"V4","notes":"Aucun endpoint 'last 2 min by quarter'. Reconstruire à partir du PBP en filtrant les actions des 2 dernières min de chaque quart. Coûteux et instable.","api_source":"NBA Stats playbyplayv3 (reconstruction) → Aucune API fiable"},{"num":79,"categorie":"Style de jeu & Coach","donnee":"Marquage individuel habituel — assignation défensive du coach","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"NBA Stats","endpoint":"NBA Stats matchupsrollup (estimation)","cout":"payant","effort":"indéterminé","vague":"V4","notes":"matchupsrollup donne des estimations possession-par-possession (modèle Second Spectrum), MAIS ce n'est PAS une assignation officielle du coach. Fiabilité limitée pour usage pre-match. Présenter en UI comme 'matchup estimé', jamais comme 'officiel'.","api_source":"NBA Stats matchupsrollup (estimation) → Aucune API fiable"},{"num":80,"categorie":"Style de jeu & Coach","donnee":"Stratégie défensive : zone / man-to-man / switch sur pick and roll","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"payant","effort":"indéterminé","vague":"V4","notes":"Aucune API publique ne classifie le système défensif (zone vs man-to-man vs switch sur PnR). Synergy Sports le fait en B2B (>1500 $/mo). À déduire approximativement de tendances de jeu via tracking (% de switches sur PnR via Second Spectrum) ou scout video manuel.","api_source":"Aucune API fiable"},{"num":81,"categorie":"Style de jeu & Coach","donnee":"Volume tirs à 3 points par match + % de réussite","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamshotlocations","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Stat de base, présente partout. Champs FG3M/FG3A/FG3_PCT par zone.","api_source":"NBA Stats leaguedashteamshotlocations → Une seule API suffit"},{"num":82,"categorie":"Style de jeu & Coach","donnee":"Volume tirs dans la raquette par match + % de réussite","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamshotlocations","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs RestrictedArea et InThePaint(NonRA).","api_source":"NBA Stats leaguedashteamshotlocations → Une seule API suffit"},{"num":83,"categorie":"Style de jeu & Coach","donnee":"Volume tirs à mi-distance par match + % de réussite","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamshotlocations","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ MidRange.","api_source":"NBA Stats leaguedashteamshotlocations → Une seule API suffit"},{"num":84,"categorie":"Style de jeu & Coach","donnee":"Efficacité offensive par zone de tir","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamshotlocations","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #81-83. Endpoint expose tous les % par zone.","api_source":"NBA Stats leaguedashteamshotlocations → Une seule API suffit"},{"num":85,"categorie":"Style de jeu & Coach","donnee":"Efficacité défensive de l'adversaire par zone de tir","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashteamshotlocations (côté Opponent)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint expose les stats opp (défensives par zone).","api_source":"NBA Stats leaguedashteamshotlocations (côté Opponent) → Une seule API suffit"},{"num":86,"categorie":"Style de jeu & Coach","donnee":"Date de prise de poste du coach + bilan avant/après changement","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference scraping","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Bbref expose dates de transition coach + W/L par saison sur la page de la franchise et la page du coach.","api_source":"Basketball-Reference scraping → Une seule API suffit"},{"num":87,"categorie":"Défense individuelle","donnee":"Defensive Rating par poste (PG/SG/SF/PF/C) de l'équipe adverse","type":"Pre-match","scope":"Équipe","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashptdefend + position split","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint leaguedashptdefend expose défense par défenseur. Agréger par poste manuellement. Fiabilité moyenne (positions NBA simplifiées).","api_source":"NBA Stats leaguedashptdefend + position split → Une seule API suffit"},{"num":88,"categorie":"Défense individuelle","donnee":"Assignation défensive habituelle du coach adverse sur chaque star","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"NBA Stats","endpoint":"NBA Stats matchupsrollup (estimation)","cout":"payant","effort":"indéterminé","vague":"V4","notes":"Voir #79 — données estimées Second Spectrum, pas une assignation officielle. Utilisable comme proxy mais ne pas présenter comme officiel.","api_source":"NBA Stats matchupsrollup (estimation) → Aucune API fiable"},{"num":89,"categorie":"Défense individuelle","donnee":"Stats d'un joueur quand un défenseur élite lui est assigné","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats matchupsrollup (filtres off_player + def_player)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint accepte off_player_id et def_player_id : donne stats quand le matchup est estimé. Sample size variable selon paire.","api_source":"NBA Stats matchupsrollup (filtres off_player + def_player) → Une seule API suffit"},{"num":90,"categorie":"Défense individuelle","donnee":"Stats d'un joueur selon profil défenseur (grand/petit, mobile/lent)","type":"Pre-match","scope":"Joueur","faisabilite":"Combinaison","fournisseur":"NBA Stats","endpoint":"NBA Stats matchupsrollup + commonplayerinfo (biographie)","cout":"gratuit","effort":"lourd","vague":"V3","notes":"Croiser matchupsrollup avec données morphologiques (commonplayerinfo ou Bbref). Calcul lourd, échantillon par profil souvent faible.","api_source":"NBA Stats matchupsrollup + commonplayerinfo (biographie) → Combinaison de plusieurs APIs nécessaire"},{"num":91,"categorie":"Défense individuelle","donnee":"Impact d'un défenseur sur un attaquant (stats avec vs sans ce défenseur)","type":"Pre-match","scope":"Joueur","faisabilite":"Combinaison","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashptshotdefend + leagueplayerondetails","cout":"gratuit","effort":"modéré","vague":"V3","notes":"Croiser shots défendus (playerdashptshotdefend) et splits when player is on/off court (leagueplayerondetails). Approximatif et coûteux.","api_source":"NBA Stats playerdashptshotdefend + leagueplayerondetails → Combinaison de plusieurs APIs nécessaire"},{"num":92,"categorie":"Stats Joueur","donnee":"Points par match (saison en cours)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ PTS.","api_source":"Toutes APIs → Une seule API suffit"},{"num":93,"categorie":"Stats Joueur","donnee":"Rebonds par match (offensifs + défensifs séparés)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"OREB et DREB séparés présents partout.","api_source":"Toutes APIs → Une seule API suffit"},{"num":94,"categorie":"Stats Joueur","donnee":"Passes décisives par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ AST.","api_source":"Toutes APIs → Une seule API suffit"},{"num":95,"categorie":"Stats Joueur","donnee":"Minutes jouées par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ MIN.","api_source":"Toutes APIs → Une seule API suffit"},{"num":96,"categorie":"Stats Joueur","donnee":"+/- par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats / BallDontLie GOAT advanced","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ PLUS_MINUS natif boxscore avancé.","api_source":"NBA Stats / BallDontLie GOAT advanced → Une seule API suffit"},{"num":97,"categorie":"Stats Joueur","donnee":"Tirs à 2pts tentés et réussis + % par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs (calcul 2P = FG - 3P)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"À calculer (2P = FG total − 3P) ou champs FG2M/FG2A/FG2_PCT direct selon endpoint.","api_source":"Toutes APIs (calcul 2P = FG - 3P) → Une seule API suffit"},{"num":98,"categorie":"Stats Joueur","donnee":"Tirs à 3pts tentés et réussis + % par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs FG3M/FG3A/FG3_PCT natifs.","api_source":"Toutes APIs → Une seule API suffit"},{"num":99,"categorie":"Stats Joueur","donnee":"Lancers francs tentés et réussis + % par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs FTM/FTA/FT_PCT natifs.","api_source":"Toutes APIs → Une seule API suffit"},{"num":100,"categorie":"Stats Joueur","donnee":"Fautes personnelles par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ PF.","api_source":"Toutes APIs → Une seule API suffit"},{"num":101,"categorie":"Stats Joueur","donnee":"Fautes provoquées par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats (MeasureType=Misc, champ PFD)","cout":"freemium","effort":"trivial","vague":"V2","notes":"Champ PFD (Personal Fouls Drawn). Pas dans BallDontLie free tier.","api_source":"NBA Stats (MeasureType=Misc, champ PFD) → Une seule API suffit"},{"num":102,"categorie":"Stats Joueur","donnee":"Contres (blocks) par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ BLK.","api_source":"Toutes APIs → Une seule API suffit"},{"num":103,"categorie":"Stats Joueur","donnee":"Interceptions (steals) par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"Toutes APIs","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Stat de base. Champ STL.","api_source":"Toutes APIs → Une seule API suffit"},{"num":104,"categorie":"Stats Joueur","donnee":"True Shooting % (TS%)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats Advanced ou BallDontLie GOAT","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ TS_PCT dans MeasureType=Advanced.","api_source":"NBA Stats Advanced ou BallDontLie GOAT → Une seule API suffit"},{"num":105,"categorie":"Stats Joueur","donnee":"Usage Rate (USG%)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats Advanced ou BallDontLie GOAT","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ USG_PCT natif.","api_source":"NBA Stats Advanced ou BallDontLie GOAT → Une seule API suffit"},{"num":106,"categorie":"Stats Joueur","donnee":"% réussite tirs contestés vs tirs ouverts","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashplayerptshot (closest defender)","cout":"payant","effort":"indéterminé","vague":"V2","notes":"Endpoint shot tracking expose splits par distance défenseur le plus proche : Very Tight (0-2ft), Tight (2-4ft), Open (4-6ft), Wide Open (6+ft). Données Second Spectrum exposées via NBA Stats.","api_source":"NBA Stats leaguedashplayerptshot (closest defender) → Une seule API suffit"},{"num":107,"categorie":"Stats Joueur","donnee":"Shot chart — zones de tir sur la saison","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats shotchartdetail","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint exhaustif (x/y coords par tir). ATTENTION : NBA a déjà bloqué temporairement ce endpoint par le passé ; reste actuellement accessible mais instable. Cache fortement recommandé.","api_source":"NBA Stats shotchartdetail → Une seule API suffit"},{"num":108,"categorie":"Stats Joueur","donnee":"Shot chart — zones de tir vs cet adversaire spécifique","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats shotchartdetail (param OpponentTeamID)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint accepte OpponentTeamID pour filtrer. Sample size faible parfois (quelques matchs par saison vs même adversaire).","api_source":"NBA Stats shotchartdetail (param OpponentTeamID) → Une seule API suffit"},{"num":109,"categorie":"Stats Joueur","donnee":"Nombre de touches par match","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashptstats (PtMeasureType=Possessions)","cout":"payant","effort":"trivial","vague":"V2","notes":"Endpoint tracking expose le champ TOUCHES (issu de Second Spectrum).","api_source":"NBA Stats leaguedashptstats (PtMeasureType=Possessions) → Une seule API suffit"},{"num":110,"categorie":"Stats Joueur","donnee":"Pick and roll stats — ball handler (volume + efficacité)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats + Synergy","endpoint":"NBA Stats synergyplaytypes (PlayType=PRBallHandler)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Données Synergy via NBA Stats. Champs FREQ, PPP (points per possession), FG_PCT.","api_source":"NBA Stats synergyplaytypes (PlayType=PRBallHandler) → Une seule API suffit"},{"num":111,"categorie":"Stats Joueur","donnee":"Pick and roll stats — screener (volume + efficacité)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats + Synergy","endpoint":"NBA Stats synergyplaytypes (PlayType=PRRollman)","cout":"payant","effort":"indéterminé","vague":"V2","notes":"Idem #110 côté screener.","api_source":"NBA Stats synergyplaytypes (PlayType=PRRollman) → Une seule API suffit"},{"num":112,"categorie":"Stats Joueur","donnee":"Points par quart-temps Q1 / Q2 / Q3 / Q4","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats playerdashboardbygamesplits (PeriodSegment) ou BallDontLie GOAT v2","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Splits par période disponibles. BallDontLie GOAT v2 advanced stats expose period 1-4 par game.","api_source":"NBA Stats playerdashboardbygamesplits (PeriodSegment) ou BallDontLie GOAT v2 → Une seule API suffit"},{"num":113,"categorie":"Stats Joueur","donnee":"Stats clutch joueur (5 dernières min à -5 pts)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leaguedashplayerclutch","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Endpoint dédié 'clutch' niveau joueur.","api_source":"NBA Stats leaguedashplayerclutch → Une seule API suffit"},{"num":114,"categorie":"Stats Joueur","donnee":"Stats en back-to-back","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashboardbygamesplits (DaysRest=0)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Split DaysRest=0 natif.","api_source":"NBA Stats playerdashboardbygamesplits (DaysRest=0) → Une seule API suffit"},{"num":115,"categorie":"Stats Joueur","donnee":"Stats titulaire vs remplaçant séparées","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashboardbygamesplits (StarterBench split)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Split natif StarterBench.","api_source":"NBA Stats playerdashboardbygamesplits (StarterBench split) → Une seule API suffit"},{"num":116,"categorie":"Stats Joueur","donnee":"Stats selon compo coéquipiers (avec/sans joueur X)","type":"Pre-match","scope":"Joueur","faisabilite":"Combinaison","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashboardbyteamperformance + leagueplayerondetails","cout":"gratuit","effort":"trivial","vague":"V3","notes":"Endpoints On/Off court existent. Pour 'avec/sans joueur X précis', il faut calculer à partir des lineups (teamdashlineups) ou du PBP — pas d'endpoint direct.","api_source":"NBA Stats playerdashboardbyteamperformance + leagueplayerondetails → Combinaison de plusieurs APIs nécessaire"},{"num":117,"categorie":"Stats Joueur","donnee":"Lineups du joueur + stats et +/- par combinaison","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats teamdashlineups (filtrage par player_id)","cout":"gratuit","effort":"modéré","vague":"V1","notes":"Filtrage côté client par présence du joueur dans le lineup.","api_source":"NBA Stats teamdashlineups (filtrage par player_id) → Une seule API suffit"},{"num":118,"categorie":"Stats Joueur","donnee":"Usage rate selon compo disponible","type":"Pre-match","scope":"Joueur","faisabilite":"Combinaison","fournisseur":"NBA Stats","endpoint":"NBA Stats lineups + on/off (calcul)","cout":"gratuit","effort":"lourd","vague":"V3","notes":"Calcul complexe : USG% varie en fonction des coéquipiers présents. Nécessite croiser teamdashlineups + leagueplayerondetails.","api_source":"NBA Stats lineups + on/off (calcul) → Combinaison de plusieurs APIs nécessaire"},{"num":119,"categorie":"Stats Joueur","donnee":"Stats du joueur lors de chaque confrontation vs cet adversaire","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashboardbyopponent","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Endpoint dédié playerdashboardbyopponent.","api_source":"NBA Stats playerdashboardbyopponent → Une seule API suffit"},{"num":120,"categorie":"Stats Joueur","donnee":"Compos des deux équipes lors de ces confrontations","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoresummaryv2 historique","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Voir #57. Lineups via START_POSITION dans box score.","api_source":"NBA Stats boxscoresummaryv2 historique → Une seule API suffit"},{"num":121,"categorie":"Stats Joueur","donnee":"Stats du joueur vs défenseurs clés de l'équipe adverse","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats matchupsrollup (off_player + def_player)","cout":"payant","effort":"indéterminé","vague":"V2","notes":"Voir #89. Fiabilité moyenne (estimation Second Spectrum).","api_source":"NBA Stats matchupsrollup (off_player + def_player) → Une seule API suffit"},{"num":122,"categorie":"Stats Joueur","donnee":"Stats par période de saison (avant/après All-Star break)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashboardbygamesplits (SeasonSegment)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Filtre SeasonSegment=Pre All-Star ou Post All-Star natif.","api_source":"NBA Stats playerdashboardbygamesplits (SeasonSegment) → Une seule API suffit"},{"num":123,"categorie":"Stats Joueur","donnee":"Stats saison régulière vs playoffs (séparées)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playercareerstats ou leaguegamelog (SeasonType)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Filtre SeasonType=Regular Season / Playoffs natif.","api_source":"NBA Stats playercareerstats ou leaguegamelog (SeasonType) → Une seule API suffit"},{"num":124,"categorie":"Stats Joueur","donnee":"Historique des blessures — durée d'absence et stats au retour","type":"Pre-match","scope":"Joueur","faisabilite":"Combinaison","fournisseur":"BallDontLie + Scraping","endpoint":"BallDontLie injuries + scraping ProSportsTransactions","cout":"gratuit","effort":"modéré","vague":"V3","notes":"Pas d'historique long-terme injuries via API gratuite ; BallDontLie ne stocke que le rapport courant. ProSportsTransactions ou Bbref scraping requis pour l'historique. Stats au retour à reconstituer en croisant gamelogs + dates d'absence.","api_source":"BallDontLie injuries + scraping ProSportsTransactions → Combinaison de plusieurs APIs nécessaire"},{"num":125,"categorie":"Stats Joueur","donnee":"Statut contrat — free agent cet été (booléen)","type":"Pre-match","scope":"Joueur","faisabilite":"Aucune","fournisseur":"Scraping","endpoint":"Spotrac ou HoopsHype scraping","cout":"gratuit","effort":"indéterminé","vague":"V4","notes":"Aucune API gratuite publique. Spotrac et HoopsHype scrappables. SportsDataIO Contracts feed payant.","api_source":"Spotrac ou HoopsHype scraping → Aucune API fiable"},{"num":126,"categorie":"Stats Joueur","donnee":"Course aux récompenses individuelles (MVP, DPOY, MIP, ROY, 6MOY)","type":"Pre-match","scope":"Joueur","faisabilite":"Aucune","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference MVP Tracker scraping","cout":"gratuit","effort":"indéterminé","vague":"V4","notes":"Pas d'API officielle. Bbref /friv/mvp.html scrappable (projection statistique). NBA.com publie un Kia MVP Ladder hebdomadaire via articles, pas d'endpoint structuré. nbaawardstracker.com est une autre source à scraper.","api_source":"Basketball-Reference MVP Tracker scraping → Aucune API fiable"},{"num":127,"categorie":"Stats Joueur","donnee":"Course aux titres statistiques (scoring, rebounding, assists, steals, blocks)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats leagueleaders","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Endpoint natif leagueleaders par catégorie statistique (PTS, REB, AST, STL, BLK).","api_source":"NBA Stats leagueleaders → Une seule API suffit"},{"num":128,"categorie":"Stats Joueur","donnee":"Records personnels proches ce soir (pts/reb/ast historiques du joueur)","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playercareerstats + playergamelogs","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Calcul à partir de career highs (champs CAREER_HIGH indirects via gamelog max).","api_source":"NBA Stats playercareerstats + playergamelogs → Une seule API suffit"},{"num":129,"categorie":"Stats Joueur","donnee":"Records de la franchise proches ce soir","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + NBA Stats + Scraping","endpoint":"Basketball-Reference scraping (franchise leaders) ou NBA Stats franchiseleaders","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Bbref expose top-X par franchise. NBA Stats expose franchiseleaders.","api_source":"Basketball-Reference scraping (franchise leaders) ou NBA Stats franchiseleaders → Une seule API suffit"},{"num":130,"categorie":"Stats Joueur","donnee":"Records historiques NBA proches ce soir","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + NBA Stats","endpoint":"NBA Stats franchiseleaders / Basketball-Reference","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #129 mais all-time NBA records.","api_source":"NBA Stats franchiseleaders / Basketball-Reference → Une seule API suffit"},{"num":131,"categorie":"Stats Joueur","donnee":"Defensive Win Shares","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"Basketball-Reference + Scraping","endpoint":"Basketball-Reference scraping","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"DWS publié sur Bbref (leagues/NBA_2026_advanced.html). Pas dans NBA Stats officiel. BallDontLie GOAT expose Win Shares dans certains endpoints.","api_source":"Basketball-Reference scraping → Une seule API suffit"},{"num":132,"categorie":"Stats Joueur","donnee":"Minutes selon jours de repos : 1 / 2 / 3+ jours","type":"Pre-match","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats playerdashboardbygamesplits (split DaysRest)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Splits DaysRest natifs niveau joueur.","api_source":"NBA Stats playerdashboardbygamesplits (split DaysRest) → Une seule API suffit"},{"num":133,"categorie":"Arbitres","donnee":"Noms des 3 arbitres officiels annoncés par la NBA","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"Scraping","endpoint":"Scraping NBA.com /referee-assignments","cout":"payant","effort":"modéré","vague":"V2","notes":"Publié à 9h ET le matin du jour J sur official.nba.com/referee-assignments. SportsDataIO le fournit en payant. NBA Stats endpoint boxscoresummaryv2 expose les officials APRÈS le match seulement (pas pre-match). Scraping HTML obligatoire pour pre-match.","api_source":"Scraping NBA.com /referee-assignments → Une seule API suffit"},{"num":134,"categorie":"Arbitres","donnee":"Fautes sifflées en moyenne par ce trio d'arbitres","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Scraping","endpoint":"Scraping NBAstuffer ou calcul Bbref","cout":"gratuit","effort":"modéré","vague":"V4","notes":"NBAstuffer publie des stats par arbitre (export Excel hebdomadaire). Pas d'API. À reconstituer en croisant scraping referee_assignments historique + boxscores. Lourd à maintenir.","api_source":"Scraping NBAstuffer ou calcul Bbref → Aucune API fiable"},{"num":135,"categorie":"Arbitres","donnee":"Lancers francs accordés en moyenne par ce trio","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Scraping","endpoint":"Scraping NBAstuffer","cout":"gratuit","effort":"indéterminé","vague":"V4","notes":"Idem #134.","api_source":"Scraping NBAstuffer → Aucune API fiable"},{"num":136,"categorie":"Arbitres","donnee":"Fautes sifflées par quart-temps par ce trio","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"indéterminé","effort":"modéré","vague":"V4","notes":"Aucune source publique structurée. Il faudrait croiser PBP de tous les matchs arbitrés par ce trio sur la saison + agrégation par quart. Coûteux et inédit côté infra.","api_source":"Aucune API fiable"},{"num":137,"categorie":"Paris & Cotes","donnee":"Cote de chaque équipe à l'ouverture (Winamax)","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"gratuit","effort":"modéré","vague":"V4","notes":"Winamax n'a pas d'API publique et n'est pas couvert par The Odds API. Scraping de leur site = violation des ToS et risque commercial.","api_source":"Aucune API fiable"},{"num":138,"categorie":"Paris & Cotes","donnee":"Cote de chaque équipe à l'ouverture (Betclic)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"The Odds API","endpoint":"The Odds API (region=eu/fr)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Betclic listé dans les bookmakers EU/FR de The Odds API. Plan gratuit 25 req/jour suffit pour MVP. Snapshot d'ouverture nécessite Pro plan (29 $/mo) + historical archive (Business 99 $/mo).","api_source":"The Odds API (region=eu/fr) → Une seule API suffit"},{"num":139,"categorie":"Paris & Cotes","donnee":"Cote de chaque équipe à l'ouverture (Unibet)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"The Odds API","endpoint":"The Odds API (region=uk/eu)","cout":"freemium","effort":"indéterminé","vague":"V2","notes":"Unibet couvert par The Odds API. Idem Betclic côté plan.","api_source":"The Odds API (region=uk/eu) → Une seule API suffit"},{"num":140,"categorie":"Paris & Cotes","donnee":"Cote de chaque équipe à l'ouverture (PMU)","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"gratuit","effort":"modéré","vague":"V4","notes":"PMU pas couvert par The Odds API. Pas d'API publique PMU. Scraping = ToS violation.","api_source":"Aucune API fiable"},{"num":141,"categorie":"Paris & Cotes","donnee":"Mouvement de cote depuis l'ouverture (évolution en temps réel)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"The Odds API","endpoint":"The Odds API Business (historical)","cout":"payant","effort":"indéterminé","vague":"V2","notes":"Endpoint historical avec snapshots. Plan Business 99 $/mo. Coût élevé en quota (jusqu'à 90 req par snapshot avec 3 markets × 3 régions).","api_source":"The Odds API Business (historical) → Une seule API suffit"},{"num":142,"categorie":"Paris & Cotes","donnee":"Nombre de parieurs sur chaque équipe","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"payant","effort":"indéterminé","vague":"V4","notes":"Donnée propriétaire bookmakers. Action Network publie parfois (US uniquement, payant). Aucune API FR.","api_source":"Aucune API fiable"},{"num":143,"categorie":"Paris & Cotes","donnee":"Montant total misé sur chaque équipe","type":"Pre-match","scope":"Match","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"indéterminé","effort":"indéterminé","vague":"V4","notes":"Idem #142 — donnée propriétaire confidentielle.","api_source":"Aucune API fiable"},{"num":144,"categorie":"Paris & Cotes","donnee":"Handicap de chaque équipe (spread)","type":"Pre-match","scope":"Match","faisabilite":"Une seule API","fournisseur":"The Odds API","endpoint":"The Odds API (markets=spreads)","cout":"freemium","effort":"indéterminé","vague":"V2","notes":"Marché 'spreads' natif dans The Odds API.","api_source":"The Odds API (markets=spreads) → Une seule API suffit"},{"num":145,"categorie":"Paris & Cotes","donnee":"% historique de couverture du handicap à domicile","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"The Odds API","endpoint":"Calcul à partir The Odds API historical + scores","cout":"payant","effort":"trivial","vague":"V4","notes":"Pas d'endpoint dédié ATS (Against The Spread). À reconstruire en croisant historical odds (Business 99 $/mo) avec résultats. Faisable mais long et coûteux en requêtes.","api_source":"Calcul à partir The Odds API historical + scores → Aucune API fiable"},{"num":146,"categorie":"Paris & Cotes","donnee":"% historique de couverture du handicap à l'extérieur","type":"Pre-match","scope":"Équipe","faisabilite":"Aucune","fournisseur":"The Odds API","endpoint":"Calcul The Odds API historical + scores","cout":"freemium","effort":"indéterminé","vague":"V4","notes":"Idem #145 côté road.","api_source":"Calcul The Odds API historical + scores → Aucune API fiable"},{"num":147,"categorie":"Live","donnee":"Score en temps réel par équipe","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"NBA Stats live scoreboard ou BallDontLie","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"nba_api.live.nba.endpoints.scoreboard gratuit. BallDontLie GOAT temps réel propre et stable.","api_source":"NBA Stats live scoreboard ou BallDontLie → Une seule API suffit"},{"num":148,"categorie":"Live","donnee":"Score par quart-temps en live (Q1/Q2/Q3/Q4 + OT)","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie","endpoint":"BallDontLie /games (champs live q1-q4, ot1-ot3)","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs home_q1...home_ot3 exposés en temps réel.","api_source":"BallDontLie /games (champs live q1-q4, ot1-ot3) → Une seule API suffit"},{"num":149,"categorie":"Live","donnee":"Points en transition / contre-attaque depuis le début du match","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoremiscv3 (live)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ PTS_FB (fast-break points) dispo en live via box score Misc. Délai ~30s après broadcast.","api_source":"NBA Stats boxscoremiscv3 (live) → Une seule API suffit"},{"num":150,"categorie":"Live","donnee":"Turnovers en temps réel par équipe","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie / NBA Stats live boxscore","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ TOV box score live.","api_source":"BallDontLie / NBA Stats live boxscore → Une seule API suffit"},{"num":151,"categorie":"Live","donnee":"Rebonds offensifs en temps réel par équipe","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie / NBA Stats live boxscore","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ OREB live.","api_source":"BallDontLie / NBA Stats live boxscore → Une seule API suffit"},{"num":152,"categorie":"Live","donnee":"Rebonds défensifs en temps réel par équipe","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie / NBA Stats live boxscore","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ DREB live.","api_source":"BallDontLie / NBA Stats live boxscore → Une seule API suffit"},{"num":153,"categorie":"Live","donnee":"Fautes par équipe par quart en live","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats boxscoresummaryv2 live (calcul depuis PBP)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Pas de champ direct par quart. À reconstituer depuis le PBP live. Bonus team disponible (home_in_bonus / visitor_in_bonus dans BallDontLie).","api_source":"NBA Stats boxscoresummaryv2 live (calcul depuis PBP) → Une seule API suffit"},{"num":154,"categorie":"Live","donnee":"Temps morts restants par équipe","type":"Live","scope":"Match","faisabilite":"Une seule API","fournisseur":"BallDontLie","endpoint":"BallDontLie /games (home_timeouts_remaining)","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ natif home_timeouts_remaining / visitor_timeouts_remaining.","api_source":"BallDontLie /games (home_timeouts_remaining) → Une seule API suffit"},{"num":155,"categorie":"Live","donnee":"Challenges vidéo restants par coach","type":"Live","scope":"Match","faisabilite":"Aucune","fournisseur":"Aucun","endpoint":"","cout":"payant","effort":"indéterminé","vague":"V4","notes":"Aucune API publique n'expose le compteur de challenges restants. Sportradar Push feeds le font (enterprise). À déduire éventuellement du PBP en comptant les challenges utilisés. À déprioriser pour MVP.","api_source":"Aucune API fiable"},{"num":156,"categorie":"Live","donnee":"Points joueur en temps réel","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie live stats / NBA Stats live boxscore","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"nba_api.live.nba.endpoints.boxscore gratuit.","api_source":"BallDontLie live stats / NBA Stats live boxscore → Une seule API suffit"},{"num":157,"categorie":"Live","donnee":"Rebonds joueur en temps réel","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie / NBA Stats live","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #156.","api_source":"BallDontLie / NBA Stats live → Une seule API suffit"},{"num":158,"categorie":"Live","donnee":"Passes joueur en temps réel","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie / NBA Stats live","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #156.","api_source":"BallDontLie / NBA Stats live → Une seule API suffit"},{"num":159,"categorie":"Live","donnee":"Contres joueur en temps réel","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"BallDontLie + NBA Stats","endpoint":"BallDontLie / NBA Stats live","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Idem #156.","api_source":"BallDontLie / NBA Stats live → Une seule API suffit"},{"num":160,"categorie":"Live","donnee":"Tirs tentés / réussis joueur en live (2pts / 3pts / LF)","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats live boxscoretraditionalv3","cout":"gratuit","effort":"indéterminé","vague":"V2","notes":"Champs FGM/FGA/FG3M/FG3A/FTM/FTA dispos en live.","api_source":"NBA Stats live boxscoretraditionalv3 → Une seule API suffit"},{"num":161,"categorie":"Live","donnee":"Fautes personnelles joueur en live","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats live boxscore","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ PF en live.","api_source":"NBA Stats live boxscore → Une seule API suffit"},{"num":162,"categorie":"Live","donnee":"Minutes jouées en live par joueur","type":"Live","scope":"Joueur","faisabilite":"Une seule API","fournisseur":"NBA Stats","endpoint":"NBA Stats live boxscore","cout":"gratuit","effort":"trivial","vague":"V1","notes":"Champ MIN mis à jour live.","api_source":"NBA Stats live boxscore → Une seule API suffit"},{"num":163,"categorie":"Live","donnee":"Temps sur le banc depuis dernière présence sur le terrain","type":"Live","scope":"Joueur","faisabilite":"Aucune","fournisseur":"NBA Stats","endpoint":"NBA Stats playbyplayv3 live (calcul)","cout":"payant","effort":"trivial","vague":"V4","notes":"Aucun endpoint direct. À reconstruire en parsant le PBP et en détectant les substitutions. Faisable mais coûteux et fragile. Sportradar le fournit en push (enterprise).","api_source":"NBA Stats playbyplayv3 live (calcul) → Aucune API fiable"}];
+
+const TOTAL = DATA.length;
+
+// État courant des filtres
+const STORAGE_KEY = 'statspro_dashboard_filters_v1';
+let state = {
+  search: '',
+  num_min: 1, num_max: 163,
+  toggles: { quickwins: false, hidev4: false, freeonly: false, prematchonly: false, liveonly: false, determined: false },
+  axes: {
+    vague: new Set(),
+    faisabilite: new Set(),
+    fournisseur: new Set(),
+    cout: new Set(),
+    effort: new Set(),
+    type: new Set(),
+    scope: new Set(),
+    categorie: new Set()
+  },
+  sort: { col: 'num', dir: 'asc' }
+};
+
+// Restaure depuis localStorage
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  if (saved) {
+    state.search = saved.search || '';
+    state.num_min = saved.num_min || 1;
+    state.num_max = saved.num_max || 163;
+    state.toggles = Object.assign(state.toggles, saved.toggles || {});
+    if (saved.axes) for (const k in saved.axes) state.axes[k] = new Set(saved.axes[k]);
+    if (saved.sort) state.sort = saved.sort;
+  }
+} catch(e) {}
+
+function persist() {
+  const s = {
+    search: state.search,
+    num_min: state.num_min, num_max: state.num_max,
+    toggles: state.toggles,
+    axes: Object.fromEntries(Object.entries(state.axes).map(([k,v]) => [k, [...v]])),
+    sort: state.sort
+  };
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e){}
+}
+
+// Distinct values per axis (sur DATA totale, pour stabilité de la sidebar)
+const DISTINCT = {};
+['vague','faisabilite','fournisseur','cout','effort','type','scope','categorie'].forEach(k => {
+  DISTINCT[k] = [...new Set(DATA.map(d => d[k]))].sort((a,b) => {
+    if (k === 'vague') return a.localeCompare(b);
+    return a.localeCompare(b, 'fr');
+  });
+});
+
+// Ordres logiques pour quelques axes
+const VAGUE_ORDER = ['V1','V2','V3','V4'];
+const FAISAB_ORDER = ['Une seule API','Combinaison','Aucune'];
+const COUT_ORDER = ['gratuit','freemium','payant','indéterminé'];
+const EFFORT_ORDER = ['trivial','modéré','lourd','indéterminé'];
+const TYPE_ORDER = ['Pre-match','Live'];
+function applyOrder(axis, items) {
+  const orders = {vague:VAGUE_ORDER, faisabilite:FAISAB_ORDER, cout:COUT_ORDER, effort:EFFORT_ORDER, type:TYPE_ORDER};
+  const o = orders[axis];
+  if (!o) return items;
+  return items.slice().sort((a,b) => o.indexOf(a) - o.indexOf(b));
+}
+
+// Construction des filtres dans la sidebar
+function buildFilterUI() {
+  document.querySelectorAll('.filter-group').forEach(g => {
+    const axis = g.dataset.axis;
+    const vals = applyOrder(axis, DISTINCT[axis]);
+    g.innerHTML = '';
+    vals.forEach(v => {
+      const lbl = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.dataset.axis = axis;
+      cb.dataset.val = v;
+      cb.checked = state.axes[axis].has(v);
+      cb.addEventListener('change', () => {
+        if (cb.checked) state.axes[axis].add(v);
+        else state.axes[axis].delete(v);
+        rerender();
+      });
+      lbl.appendChild(cb);
+      const txt = document.createElement('span');
+      txt.textContent = v;
+      lbl.appendChild(txt);
+      const c = document.createElement('span');
+      c.className = 'count';
+      c.dataset.axis = axis;
+      c.dataset.val = v;
+      lbl.appendChild(c);
+      g.appendChild(lbl);
+    });
+  });
+}
+
+function applyFilters() {
+  return DATA.filter(d => {
+    if (d.num < state.num_min || d.num > state.num_max) return false;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const hay = (d.donnee + ' ' + d.notes + ' ' + d.endpoint + ' ' + d.api_source).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    // toggles
+    if (state.toggles.quickwins && d.vague !== 'V1') return false;
+    if (state.toggles.hidev4 && d.vague === 'V4') return false;
+    if (state.toggles.freeonly && d.cout !== 'gratuit') return false;
+    if (state.toggles.prematchonly && d.type !== 'Pre-match') return false;
+    if (state.toggles.liveonly && d.type !== 'Live') return false;
+    if (state.toggles.determined && (d.cout === 'indéterminé' || d.effort === 'indéterminé')) return false;
+    // axes (multi-select OU dans un axe, ET entre axes)
+    for (const k in state.axes) {
+      const set = state.axes[k];
+      if (set.size > 0 && !set.has(d[k])) return false;
+    }
+    return true;
+  });
+}
+
+function updateAxisCounts(filtered) {
+  // Pour chaque axe, on compte combien de lignes filtrées tomberaient dans chaque valeur
+  // (en re-appliquant tous les autres filtres)
+  document.querySelectorAll('.filter-group .count').forEach(span => {
+    const axis = span.dataset.axis;
+    const val = span.dataset.val;
+    const n = filtered.filter(d => d[axis] === val).length;
+    span.textContent = n;
+    span.style.opacity = n === 0 ? 0.3 : 1;
+  });
+}
+
+// ─── KPIs ───
+function updateKPIs(f) {
+  const total = f.length;
+  const pct = (n) => total === 0 ? '—' : Math.round(n / total * 100) + '%';
+  document.getElementById('kpi-count').textContent = total;
+  document.getElementById('kpi-count-sub').textContent = `sur ${TOTAL} (${Math.round(total/TOTAL*100)}%)`;
+  const single = f.filter(d => d.faisabilite === 'Une seule API').length;
+  const combo = f.filter(d => d.faisabilite === 'Combinaison').length;
+  const aucune = f.filter(d => d.faisabilite === 'Aucune').length;
+  const quick = f.filter(d => d.vague === 'V1').length;
+  const grat = f.filter(d => d.cout === 'gratuit').length;
+  document.getElementById('kpi-single').textContent = single;
+  document.getElementById('kpi-single-pct').textContent = pct(single) + ' du résultat';
+  document.getElementById('kpi-combo').textContent = combo;
+  document.getElementById('kpi-combo-pct').textContent = pct(combo);
+  document.getElementById('kpi-aucune').textContent = aucune;
+  document.getElementById('kpi-aucune-pct').textContent = pct(aucune);
+  document.getElementById('kpi-quick').textContent = quick;
+  document.getElementById('kpi-quick-pct').textContent = pct(quick) + ' du résultat';
+  document.getElementById('kpi-gratuit').textContent = grat;
+  document.getElementById('kpi-gratuit-pct').textContent = pct(grat) + ' du résultat';
+}
+
+// ─── Charts ───
+// Style global Chart.js
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#475569';
+Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.96)';
+Chart.defaults.plugins.tooltip.titleFont = { weight: '600', size: 12 };
+Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
+Chart.defaults.plugins.tooltip.padding = 10;
+Chart.defaults.plugins.tooltip.cornerRadius = 6;
+Chart.defaults.plugins.tooltip.displayColors = true;
+Chart.defaults.plugins.tooltip.boxPadding = 4;
+Chart.defaults.borderColor = '#e8ebf0';
+Chart.defaults.scales = Chart.defaults.scales || {};
+
+let chartFaisab=null, chartFourn=null, chartCat=null;
+
+function colorFor(axis, val) {
+  if (axis === 'faisabilite') return {'Une seule API':'#22c55e','Combinaison':'#f97316','Aucune':'#ef4444'}[val] || '#94a3b8';
+  if (axis === 'cout') return {'gratuit':'#22c55e','freemium':'#eab308','payant':'#ef4444','indéterminé':'#94a3b8'}[val] || '#94a3b8';
+  if (axis === 'effort') return {'trivial':'#22c55e','modéré':'#eab308','lourd':'#ef4444','indéterminé':'#94a3b8'}[val] || '#94a3b8';
+  return '#3b82f6';
+}
+
+function updateCharts(f) {
+  // 1) Donut faisabilité
+  const ctx1 = document.getElementById('chart-faisab').getContext('2d');
+  const counts1 = FAISAB_ORDER.map(v => f.filter(d => d.faisabilite === v).length);
+  document.getElementById('meta-faisab').textContent = `${f.length} lignes`;
+  if (chartFaisab) chartFaisab.destroy();
+  chartFaisab = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: FAISAB_ORDER,
+      datasets: [{ data: counts1, backgroundColor: FAISAB_ORDER.map(v => colorFor('faisabilite', v)),
+                   borderColor: '#fff', borderWidth: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 } } },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} (${f.length ? Math.round(ctx.parsed/f.length*100) : 0}%)` } }
+      },
+      cutout: '60%'
+    }
+  });
+
+  // 2) Barres horizontales fournisseur
+  const fourn_counts = {};
+  f.forEach(d => { fourn_counts[d.fournisseur] = (fourn_counts[d.fournisseur]||0) + 1; });
+  const fourn_sorted = Object.entries(fourn_counts).sort((a,b) => b[1]-a[1]);
+  const ctx2 = document.getElementById('chart-fourn').getContext('2d');
+  document.getElementById('meta-fourn').textContent = `${fourn_sorted.length} fournisseurs présents`;
+  if (chartFourn) chartFourn.destroy();
+  chartFourn = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: fourn_sorted.map(x => x[0]),
+      datasets: [{ data: fourn_sorted.map(x => x[1]),
+                   backgroundColor: fourn_sorted.map(x => {
+                     const palette = {'NBA Stats':'#3b82f6','BallDontLie':'#ec4899','Basketball-Reference':'#eab308',
+                                      'The Odds API':'#8b5cf6','SportsDataIO':'#fb923c','Synergy':'#dc2626',
+                                      'Scraping':'#6366f1','Calcul interne':'#10b981','Aucun':'#ef4444'};
+                     if (palette[x[0]]) return palette[x[0]];
+                     if (x[0].includes(' + ')) return '#64748b'; // combinaisons
+                     return '#94a3b8';
+                   })}]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: { ticks: { font: { family: 'Inter', size: 11 } } }, y: { ticks: { font: { family: 'Inter', size: 11 } } } }
+    }
+  });
+
+  // 3) Matrice Coût × Effort
+  const matrix = document.getElementById('matrix-table');
+  let html = '<thead><tr><th></th>';
+  EFFORT_ORDER.forEach(e => html += `<th>${e}</th>`);
+  html += '<th>Total</th></tr></thead><tbody>';
+  const max = Math.max(1, ...COUT_ORDER.flatMap(c => EFFORT_ORDER.map(e => f.filter(d => d.cout === c && d.effort === e).length)));
+  COUT_ORDER.forEach(c => {
+    html += `<tr><td class="label">${c}</td>`;
+    let row_total = 0;
+    EFFORT_ORDER.forEach(e => {
+      const n = f.filter(d => d.cout === c && d.effort === e).length;
+      row_total += n;
+      const intensity = n / max;
+      let bg = 'transparent';
+      if (n > 0) {
+        if (intensity < 0.34) bg = 'var(--green-soft)';
+        else if (intensity < 0.67) bg = 'var(--orange-soft)';
+        else bg = 'var(--red-soft)';
+      }
+      html += `<td class="matrix-cell ${n===0?'zero':''}" style="background:${bg}">${n}</td>`;
+    });
+    html += `<td class="label">${row_total}</td></tr>`;
+  });
+  html += '<tr><td class="label">Total</td>';
+  EFFORT_ORDER.forEach(e => {
+    const n = f.filter(d => d.effort === e).length;
+    html += `<td class="label">${n}</td>`;
+  });
+  html += `<td class="label">${f.length}</td></tr>`;
+  html += '</tbody>';
+  matrix.innerHTML = html;
+  document.getElementById('meta-matrix').textContent = `${f.length} lignes`;
+
+  // 4) Bar empilé Catégorie × Faisabilité
+  const cats = applyOrder('categorie', DISTINCT.categorie);
+  const stacks = FAISAB_ORDER.map(faisab => ({
+    label: faisab,
+    data: cats.map(c => f.filter(d => d.categorie === c && d.faisabilite === faisab).length),
+    backgroundColor: colorFor('faisabilite', faisab)
+  }));
+  const ctx4 = document.getElementById('chart-cat').getContext('2d');
+  document.getElementById('meta-cat').textContent = `${cats.length} catégories`;
+  if (chartCat) chartCat.destroy();
+  chartCat = new Chart(ctx4, {
+    type: 'bar',
+    data: { labels: cats, datasets: stacks },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 10 } } } },
+      scales: {
+        x: { stacked: true, ticks: { font: { family: 'Inter', size: 10 } } },
+        y: { stacked: true, ticks: { font: { family: 'Inter', size: 10 } } }
+      }
+    }
+  });
+}
+
+// ─── Tableau détail ───
+const COLS = [
+  { key: 'num',         label: '#',           width: '40px',  type: 'num',    cls: 'num-cell' },
+  { key: 'donnee',      label: 'Donnée',                       type: 'text',   cls: 'donee-cell' },
+  { key: 'categorie',   label: 'Catégorie',                    type: 'text' },
+  { key: 'type',        label: 'Type',                         type: 'text' },
+  { key: 'scope',       label: 'Scope',                        type: 'text' },
+  { key: 'faisabilite', label: 'Faisabilité',                  type: 'text' },
+  { key: 'fournisseur', label: 'Fournisseur',                  type: 'text' },
+  { key: 'cout',        label: 'Coût',                         type: 'text' },
+  { key: 'effort',      label: 'Effort',                       type: 'text' },
+  { key: 'vague',       label: 'Vague',                        type: 'text' },
+  { key: 'endpoint',    label: 'Endpoint(s)',                  type: 'text' }
+];
+
+function buildTableHead() {
+  const tr = document.getElementById('detail-head');
+  tr.innerHTML = '';
+  COLS.forEach(c => {
+    const th = document.createElement('th');
+    th.textContent = c.label;
+    if (c.width) th.style.width = c.width;
+    th.dataset.key = c.key;
+    if (state.sort.col === c.key) {
+      th.classList.add('active');
+      th.innerHTML += ` <span class="arrow">${state.sort.dir === 'asc' ? '▲' : '▼'}</span>`;
+    } else {
+      th.innerHTML += ` <span class="arrow">↕</span>`;
+    }
+    th.addEventListener('click', () => {
+      if (state.sort.col === c.key) state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+      else { state.sort.col = c.key; state.sort.dir = 'asc'; }
+      rerender();
+    });
+    tr.appendChild(th);
+  });
+  document.getElementById('sort-info').textContent = `${state.sort.col}  ${state.sort.dir === 'asc' ? '↑' : '↓'}`;
+}
+
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function pillFor(col, val) {
+  if (col === 'faisabilite') {
+    const cls = {'Une seule API':'pill-faisab-single','Combinaison':'pill-faisab-combo','Aucune':'pill-faisab-aucune'}[val];
+    return `<span class="pill ${cls}">${escapeHtml(val)}</span>`;
+  }
+  if (col === 'cout') {
+    const cls = {'gratuit':'pill-cout-gratuit','freemium':'pill-cout-freemium','payant':'pill-cout-payant','indéterminé':'pill-cout-indeterm'}[val];
+    return `<span class="pill ${cls}">${escapeHtml(val)}</span>`;
+  }
+  if (col === 'effort') {
+    const cls = {'trivial':'pill-effort-trivial','modéré':'pill-effort-modere','lourd':'pill-effort-lourd','indéterminé':'pill-effort-indeterm'}[val];
+    return `<span class="pill ${cls}">${escapeHtml(val)}</span>`;
+  }
+  if (col === 'vague') {
+    return `<span class="pill pill-vague-${val}">${escapeHtml(val)}</span>`;
+  }
+  if (col === 'fournisseur') {
+    return `<span class="pill pill-fourn" data-f="${escapeHtml(val)}">${escapeHtml(val)}</span>`;
+  }
+  return escapeHtml(val);
+}
+
+function buildTableBody(f) {
+  // Tri
+  const sorted = f.slice().sort((a,b) => {
+    let va = a[state.sort.col], vb = b[state.sort.col];
+    if (typeof va === 'number' && typeof vb === 'number') return state.sort.dir === 'asc' ? va-vb : vb-va;
+    va = String(va||''); vb = String(vb||'');
+    return state.sort.dir === 'asc' ? va.localeCompare(vb, 'fr') : vb.localeCompare(va, 'fr');
+  });
+  const body = document.getElementById('detail-body');
+  body.innerHTML = '';
+  if (sorted.length === 0) {
+    body.innerHTML = `<tr><td colspan="${COLS.length}"><div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <div class="title">Aucun résultat</div>
+        <div class="sub">Aucune ligne ne correspond aux filtres actifs.</div>
+      </div></td></tr>`;
+    return;
+  }
+  sorted.forEach((d, i) => {
+    const tr = document.createElement('tr');
+    tr.dataset.num = d.num;
+    COLS.forEach(c => {
+      const td = document.createElement('td');
+      if (c.cls) td.className = c.cls;
+      td.innerHTML = pillFor(c.key, d[c.key]);
+      tr.appendChild(td);
+    });
+    tr.addEventListener('click', (e) => {
+      // toggle detail row
+      const next = tr.nextElementSibling;
+      if (next && next.classList.contains('detail-row')) {
+        next.remove(); tr.classList.remove('expanded'); return;
+      }
+      // close any open detail row
+      document.querySelectorAll('tr.detail-row').forEach(x => x.remove());
+      document.querySelectorAll('tr.expanded').forEach(x => x.classList.remove('expanded'));
+      tr.classList.add('expanded');
+      const dr = document.createElement('tr');
+      dr.className = 'detail-row';
+      const td = document.createElement('td');
+      td.colSpan = COLS.length;
+      td.innerHTML = `
+        <div class="detail-block">
+          <dt>#</dt><dd>${d.num}</dd>
+          <dt>Donnée brute</dt><dd>${escapeHtml(d.donnee)}</dd>
+          <dt>Catégorie</dt><dd>${escapeHtml(d.categorie)}</dd>
+          <dt>Type / Scope</dt><dd>${escapeHtml(d.type)} · ${escapeHtml(d.scope)}</dd>
+          <dt>Faisabilité</dt><dd>${pillFor('faisabilite', d.faisabilite)}</dd>
+          <dt>Fournisseur</dt><dd>${pillFor('fournisseur', d.fournisseur)}</dd>
+          <dt>Endpoint(s)</dt><dd>${escapeHtml(d.endpoint)}</dd>
+          <dt>Coût / Effort</dt><dd>${pillFor('cout', d.cout)} ${pillFor('effort', d.effort)} ${pillFor('vague', d.vague)}</dd>
+          <dt>Notes</dt><dd>${escapeHtml(d.notes)}</dd>
+          <dt>API source</dt><dd class="mono">${escapeHtml(d.api_source)}</dd>
+        </div>`;
+      dr.appendChild(td);
+      tr.parentNode.insertBefore(dr, tr.nextSibling);
+    });
+    body.appendChild(tr);
+  });
+  document.getElementById('tbl-count').textContent = sorted.length;
+}
+
+// ─── Render orchestrator ───
+function rerender() {
+  const f = applyFilters();
+  updateAxisCounts(f);
+  updateKPIs(f);
+  updateCharts(f);
+  buildTableHead();
+  buildTableBody(f);
+  // sync UI
+  document.getElementById('search').value = state.search;
+  document.getElementById('num-min').value = state.num_min;
+  document.getElementById('num-max').value = state.num_max;
+  document.querySelectorAll('.toggle-btn').forEach(b => {
+    b.classList.toggle('active', !!state.toggles[b.dataset.toggle]);
+  });
+  persist();
+}
+
+// ─── Wiring ───
+buildFilterUI();
+
+document.getElementById('search').addEventListener('input', (e) => {
+  state.search = e.target.value;
+  rerender();
+});
+document.getElementById('num-min').addEventListener('input', (e) => {
+  state.num_min = Math.max(1, Math.min(163, parseInt(e.target.value) || 1));
+  rerender();
+});
+document.getElementById('num-max').addEventListener('input', (e) => {
+  state.num_max = Math.max(1, Math.min(163, parseInt(e.target.value) || 163));
+  rerender();
+});
+document.querySelectorAll('.toggle-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    state.toggles[b.dataset.toggle] = !state.toggles[b.dataset.toggle];
+    rerender();
+  });
+});
+document.getElementById('reset-btn').addEventListener('click', () => {
+  state.search = '';
+  state.num_min = 1; state.num_max = 163;
+  for (const k in state.toggles) state.toggles[k] = false;
+  for (const k in state.axes) state.axes[k] = new Set();
+  state.sort = { col: 'num', dir: 'asc' };
+  buildFilterUI();
+  rerender();
+});
+document.getElementById('export-btn').addEventListener('click', () => {
+  const f = applyFilters();
+  const cols = ['num','donnee','categorie','type','scope','faisabilite','fournisseur','endpoint','cout','effort','vague','notes','api_source'];
+  const escape = (s) => {
+    s = String(s||'');
+    if (s.includes(';') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  };
+  let csv = cols.join(';') + '\n';
+  f.forEach(d => csv += cols.map(c => escape(d[c])).join(';') + '\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `statspro_filtre_${f.length}_lignes.csv`;
+  a.click();
+});
+
+rerender();
+</script>
+</body>
+</html>
