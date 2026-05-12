@@ -108,10 +108,10 @@
     "vague": "V1",
     "notes": "Aucune API gratuite ne donne une 'projection' fiable. SportsDataIO fournit des projections payantes. Calcul possible côté client : moyenne mobile sur les 10 derniers matchs depuis playergamelogs. À ajuster manuellement si rotation perturbée par blessures.",
     "api_source": "NBA Stats playergamelogs (calcul moyenne mobile) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "Signature: team_id+player_id+season (vs team_id+season annoncé). OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 7,
@@ -127,10 +127,10 @@
     "vague": "V1",
     "notes": "Endpoints teamdashlineups et boxscoreplayertrackv2 permettent d'extraire les rotations effectives. À calculer côté client : pas d'endpoint 'rotation' prêt-à-l'emploi. Position des joueurs souvent simplifiée (G/F/C) dans NBA Stats.",
     "api_source": "NBA Stats teamdashlineups + boxscoretraditionalv3 → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name null, team.abbreviation vide. 250 lineups retournés.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 8,
@@ -146,10 +146,10 @@
     "vague": "V1",
     "notes": "Endpoint expose minutes par joueur, agrégation par position côté client. Fiabilité limitée car le champ 'POSITION' dans NBA Stats est souvent simplifié et ne reflète pas toujours le rôle réel.",
     "api_source": "NBA Stats leaguedashplayerstats (filtre par position) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide. 3 positions. 1.49s.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 9,
@@ -165,10 +165,10 @@
     "vague": "V1",
     "notes": "Le paramètre StarterBench filtre titulaires/banc nativement. Endpoint éprouvé et stable.",
     "api_source": "NBA Stats leaguedashteamstats (StarterBench=Bench) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 10,
@@ -184,10 +184,10 @@
     "vague": "V1",
     "notes": "Même endpoint que #9. Les champs PTS, REB, AST sont nativement présents dans la réponse.",
     "api_source": "NBA Stats leaguedashteamstats (StarterBench=Bench) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 11,
@@ -203,10 +203,10 @@
     "vague": "V1",
     "notes": "Idem #9-10. Champ MIN dans la réponse.",
     "api_source": "NBA Stats leaguedashteamstats (StarterBench=Bench) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 12,
@@ -222,10 +222,10 @@
     "vague": "V1",
     "notes": "Combiner les filtres Location=Home/Road avec StarterBench=Bench pour obtenir les splits banc home/away.",
     "api_source": "NBA Stats leaguedashteamstats (Location + StarterBench) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide. 2 locations.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 13,
@@ -336,10 +336,10 @@
     "vague": "V1",
     "notes": "Donnée de base présente dans tout endpoint games.",
     "api_source": "BallDontLie /games ou NBA Stats leaguegamelog → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "away_team.full_name null. Requiert game_date (vs team_id+season annoncé).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 19,
@@ -355,10 +355,10 @@
     "vague": "V1",
     "notes": "Donnée de base. Champ 'home_team_id' / 'visitor_team_id' permet de déterminer le statut domicile/extérieur pour une équipe donnée.",
     "api_source": "BallDontLie /games ou NBA Stats leaguegamelog → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "OK. Requiert game_date.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 20,
@@ -374,10 +374,10 @@
     "vague": "V1",
     "notes": "Endpoint leaguestandings accepte un paramètre Season mais pas de filtrage par date intra-saison. Pour des dates passées, il faut snapshoter quotidiennement OU recalculer en cumulant les résultats jusqu'à la date cible.",
     "api_source": "NBA Stats leaguestandingsv3 (snapshot daté, calcul) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "82 games. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 21,
@@ -393,10 +393,10 @@
     "vague": "V1",
     "notes": "Le box score liste tous les joueurs du roster ; ceux non-DNP n'ont pas de stats. Filtre côté client sur le champ COMMENT (DNP-CD, DNP-Injury, etc.).",
     "api_source": "NBA Stats boxscoretraditionalv3 (joueurs DNP) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "26 players. Signature: game_id seul (vs team_id+season annoncé).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 22,
@@ -412,10 +412,10 @@
     "vague": "V1",
     "notes": "Trivial. Datetime UTC retourné nativement, à convertir en heure locale arène.",
     "api_source": "BallDontLie /games (datetime) ou NBA Stats scheduleleaguev2 → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "home_team.full_name et away_team.full_name null. Requiert game_date.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 23,
@@ -431,10 +431,10 @@
     "vague": "V1",
     "notes": "À calculer côté client : différence entre date du match courant et date du match précédent. Pas d'endpoint dédié.",
     "api_source": "NBA Stats leaguegamelog (calcul) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "82 games. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 24,
@@ -450,10 +450,10 @@
     "vague": "V1",
     "notes": "Calcul booléen simple : back_to_back = (jours_repos == 0).",
     "api_source": "NBA Stats / BallDontLie (calcul) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "OK. Requiert game_date.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 25,
@@ -488,10 +488,10 @@
     "vague": "V1",
     "notes": "Endpoint expose le split DaysRest nativement (0, 1, 2, 3+ jours).",
     "api_source": "NBA Stats teamdashboardbygamesplits (split DaysRest) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation et full_name vides (join manquant). 7 ranges retournés.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 27,
@@ -507,10 +507,10 @@
     "vague": "V1",
     "notes": "Trivial. Champ 'CONFERENCE_RANK'.",
     "api_source": "BallDontLie standings ou NBA Stats leaguestandingsv3 → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (tier payant, attendu). NBA Stats répond. Signature: season+team_id.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 28,
@@ -526,10 +526,10 @@
     "vague": "V1",
     "notes": "Trivial. Champs WINS et LOSSES.",
     "api_source": "BallDontLie ou NBA Stats → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (attendu). NBA Stats répond. Signature: season+team_id.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 29,
@@ -564,10 +564,10 @@
     "vague": "V1",
     "notes": "Idem #29. Champ ROAD.",
     "api_source": "NBA Stats leaguestandingsv3 → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "30 teams. 0.28s. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 31,
@@ -583,10 +583,10 @@
     "vague": "V1",
     "notes": "Champ CONFERENCE_GAMES_BACK ou calcul à partir des wins/losses du leader de conférence.",
     "api_source": "NBA Stats standings (calcul) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "30 teams. Cache. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 32,
@@ -640,10 +640,10 @@
     "vague": "V1",
     "notes": "Champ DIVISION_RANK natif.",
     "api_source": "NBA Stats standings (champ DIVISION_RANK) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "30 teams. Cache. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 35,
@@ -716,10 +716,10 @@
     "vague": "V1",
     "notes": "Trivial. Filtre Conference=East.",
     "api_source": "BallDontLie ou NBA Stats leaguestandingsv3 → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (attendu). NBA Stats répond 15 teams. param conference=East.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 39,
@@ -735,10 +735,10 @@
     "vague": "V1",
     "notes": "Trivial. Filtre Conference=West.",
     "api_source": "BallDontLie ou NBA Stats leaguestandingsv3 → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (attendu). NBA Stats répond 15 teams. param conference=West.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 40,
@@ -754,10 +754,10 @@
     "vague": "V1",
     "notes": "Champ PACE natif dans MeasureType=Advanced. BallDontLie GOAT advanced stats v2 (since 2015) le donne aussi.",
     "api_source": "NBA Stats leaguedashteamstats (MeasureType=Advanced, champ PACE) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide. 30 teams.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 41,
@@ -773,10 +773,10 @@
     "vague": "V1",
     "notes": "Calcul de moyenne mobile sur game logs avancés (LastNGames=5, 10…). Endpoint dédié inexistant.",
     "api_source": "NBA Stats teamgamelogs (calcul moyenne mobile) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "approximatif",
+    "validation_note": "BUG métier: param last_n_games ignoré (10 demandé → retourne 5). 4.95s.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 42,
@@ -868,10 +868,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ OREB.",
     "api_source": "Toutes APIs (NBA Stats / BallDontLie / API-Sports) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 47,
@@ -887,10 +887,10 @@
     "vague": "V1",
     "notes": "Champ PTS_2ND_CHANCE dans MeasureType=Misc.",
     "api_source": "NBA Stats leaguedashteamstats (MeasureType=Misc, champ PTS_2ND_CHANCE) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 48,
@@ -906,10 +906,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ TOV.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 49,
@@ -925,10 +925,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ STL.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 50,
@@ -944,10 +944,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ BLK.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 51,
@@ -963,10 +963,10 @@
     "vague": "V1",
     "notes": "Splits Home/Road natifs avec MeasureType=Advanced (champ PACE).",
     "api_source": "NBA Stats teamdashboardbygeneralsplits (Location split) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name null + abbreviation vide. Très lent (17.18s), à optimiser.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 52,
@@ -1020,10 +1020,10 @@
     "vague": "V1",
     "notes": "Filtre par team1/team2. Trivial.",
     "api_source": "BallDontLie /games (filtre teams) ou NBA Stats leaguegamefinder → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "opponent.full_name null (malgré BDL OK). 2 games. 2.13s.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 55,
@@ -1077,10 +1077,10 @@
     "vague": "V1",
     "notes": "Lineup de départ extrait du box score historique (champ START_POSITION sur la table PlayerStats).",
     "api_source": "NBA Stats boxscoresummaryv2 (StartingLineups historique) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "juste",
+    "validation_note": "Très lent (12.32s). Signature: team_id+vs_team_id+season (vs team1_id+team2_id annoncé).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 58,
@@ -1096,10 +1096,10 @@
     "vague": "V1",
     "notes": "Présence DNP dans box score (champ COMMENT).",
     "api_source": "NBA Stats box score (joueurs DNP) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "Cache. Signature: team_id+vs_team_id+season.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 59,
@@ -1134,10 +1134,10 @@
     "vague": "V2",
     "notes": "Filtre SeasonType=Playoffs natif.",
     "api_source": "NBA Stats leaguegamefinder (SeasonType=Playoffs) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation et full_name vides + opponent.full_name null. Très lent (13.73s).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 61,
@@ -1343,10 +1343,10 @@
     "vague": "V1",
     "notes": "Pas de filtre natif 'late game'. À calculer côté client (grouper par tranche horaire ex. >21h locale). Échantillon souvent faible donc fiabilité statistique limitée.",
     "api_source": "NBA Stats schedule + gamelogs (calcul groupement par tranche horaire) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "47 games. Lent (10.02s), calcul dynamique, à optimiser. Valeur correcte.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 72,
@@ -1457,10 +1457,10 @@
     "vague": "V1",
     "notes": "Endpoint dédié 'clutch' (5 dernières min, écart ≤5 pts). BallDontLie GOAT advanced stats v2 expose aussi des splits clutch.",
     "api_source": "NBA Stats leaguedashteamclutch → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 78,
@@ -1571,10 +1571,10 @@
     "vague": "V1",
     "notes": "Champ MidRange.",
     "api_source": "NBA Stats leaguedashteamshotlocations → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 84,
@@ -1742,10 +1742,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ PTS.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 93,
@@ -1780,10 +1780,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ AST.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 95,
@@ -1799,10 +1799,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ MIN.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 96,
@@ -1818,10 +1818,10 @@
     "vague": "V1",
     "notes": "Champ PLUS_MINUS natif boxscore avancé.",
     "api_source": "NBA Stats / BallDontLie GOAT advanced → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name null. BDL en error (attendu).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 97,
@@ -1837,10 +1837,10 @@
     "vague": "V1",
     "notes": "À calculer (2P = FG total − 3P) ou champs FG2M/FG2A/FG2_PCT direct selon endpoint.",
     "api_source": "Toutes APIs (calcul 2P = FG - 3P) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 98,
@@ -1894,10 +1894,10 @@
     "vague": "V1",
     "notes": "Champ PF.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 101,
@@ -1932,10 +1932,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ BLK.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 103,
@@ -1951,10 +1951,10 @@
     "vague": "V1",
     "notes": "Stat de base. Champ STL.",
     "api_source": "Toutes APIs → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 104,
@@ -1970,10 +1970,10 @@
     "vague": "V1",
     "notes": "Champ TS_PCT dans MeasureType=Advanced.",
     "api_source": "NBA Stats Advanced ou BallDontLie GOAT → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name null. BDL en error (attendu).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 105,
@@ -1989,10 +1989,10 @@
     "vague": "V1",
     "notes": "Champ USG_PCT natif.",
     "api_source": "NBA Stats Advanced ou BallDontLie GOAT → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name null. BDL en error (attendu).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 106,
@@ -2141,10 +2141,10 @@
     "vague": "V1",
     "notes": "Endpoint dédié 'clutch' niveau joueur.",
     "api_source": "NBA Stats leaguedashplayerclutch → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.abbreviation vide.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 114,
@@ -2217,10 +2217,10 @@
     "vague": "V1",
     "notes": "Filtrage côté client par présence du joueur dans le lineup.",
     "api_source": "NBA Stats teamdashlineups (filtrage par player_id) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "team.full_name null. Signature: player_id+team_id+season (vs annoncé). 129 lineups.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 118,
@@ -2255,10 +2255,10 @@
     "vague": "V1",
     "notes": "Endpoint dédié playerdashboardbyopponent.",
     "api_source": "NBA Stats playerdashboardbyopponent → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "incomplet",
+    "validation_note": "player.full_name vide + opponent.full_name null. Lent (9.45s), à optimiser.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 120,
@@ -2825,10 +2825,10 @@
     "vague": "V1",
     "notes": "Champ PTS_FB (fast-break points) dispo en live via box score Misc. Délai ~30s après broadcast.",
     "api_source": "NBA Stats boxscoremiscv3 (live) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "OK. Données finales du match (0.49s).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 150,
@@ -2844,10 +2844,10 @@
     "vague": "V1",
     "notes": "Champ TOV box score live.",
     "api_source": "BallDontLie / NBA Stats live boxscore → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (attendu). NBA Stats répond.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 151,
@@ -2863,10 +2863,10 @@
     "vague": "V1",
     "notes": "Champ OREB live.",
     "api_source": "BallDontLie / NBA Stats live boxscore → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (attendu). NBA Stats répond.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 152,
@@ -2882,10 +2882,10 @@
     "vague": "V1",
     "notes": "Champ DREB live.",
     "api_source": "BallDontLie / NBA Stats live boxscore → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "BDL en error (attendu). NBA Stats répond.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 153,
@@ -2901,10 +2901,10 @@
     "vague": "V1",
     "notes": "Pas de champ direct par quart. À reconstituer depuis le PBP live. Bonus team disponible (home_in_bonus / visitor_in_bonus dans BallDontLie).",
     "api_source": "NBA Stats boxscoresummaryv2 live (calcul depuis PBP) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "Cache. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 154,
@@ -2920,10 +2920,10 @@
     "vague": "V1",
     "notes": "Champ natif home_timeouts_remaining / visitor_timeouts_remaining.",
     "api_source": "BallDontLie /games (home_timeouts_remaining) → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "Champ null sur matchs terminés (normal). Signature: game_id BDL entier (vs game_date annoncé).",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 155,
@@ -3053,10 +3053,10 @@
     "vague": "V1",
     "notes": "Champ PF en live.",
     "api_source": "NBA Stats live boxscore → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "validé",
+    "data_quality": "juste",
+    "validation_note": "26 players. OK.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 162,
@@ -3072,10 +3072,10 @@
     "vague": "V1",
     "notes": "Champ MIN mis à jour live.",
     "api_source": "NBA Stats live boxscore → Une seule API suffit",
-    "poc_status": "non_testé",
-    "data_quality": "unknown",
-    "validation_note": "",
-    "last_updated": null
+    "poc_status": "dégradé",
+    "data_quality": "juste",
+    "validation_note": "BUG format: champ minutes en string MM:SS au lieu float — casse calculs client. Valeur exacte.",
+    "last_updated": "2026-05-12T08:11:18.832954+00:00"
   },
   {
     "num": 163,
