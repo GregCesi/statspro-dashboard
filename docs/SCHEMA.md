@@ -15,6 +15,8 @@
 | `dégradé` | Exploitable mais sans double-validation : donnée probablement juste, pas confirmée. |
 | `bloqué` | Non fournissable en gratuit — endpoint payant ou inexistant. |
 | `out_of_scope` | Retiré du périmètre du PoC courant, délibérément. |
+| `skipped` | Test non exécuté pour cause technique (fixture manquante, environnement indisponible). Rerun nécessaire. |
+| `reporté_V2` | Fonctionnalité retirée du scope V1 par décision archi, à reprendre en V2. |
 
 **Exemples :**
 - Ligne 15 (Score final) testée contre nba.com, écart 0% → `validé`
