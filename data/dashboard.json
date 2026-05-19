@@ -1400,10 +1400,10 @@
     "vague": "V1",
     "notes": "Reconstruire en croisant historique des entraîneurs (Bbref) avec game logs. Pas d'endpoint direct.",
     "api_source": "Basketball-Reference scraping (calcul) → Une seule API suffit",
-    "poc_status": "reporté_V2",
+    "poc_status": "validated_slow",
     "data_quality": "unknown",
-    "validation_note": "no-scraping V1 (CLAUDE.md) — Basketball-Reference, à reprendre V2",
-    "last_updated": "2026-05-15T16:33:00.000Z"
+    "validation_note": "audit 2026-05-19 — 9.20s > seuil 5s, cache requis",
+    "last_updated": "2026-05-19T14:12:00.000Z"
   },
   {
     "num": 75,
@@ -2920,10 +2920,10 @@
     "vague": "V1",
     "notes": "Champ natif home_timeouts_remaining / visitor_timeouts_remaining.",
     "api_source": "BallDontLie /games (home_timeouts_remaining) → Une seule API suffit",
-    "poc_status": "skipped",
+    "poc_status": "validé",
     "data_quality": "unknown",
-    "validation_note": "skipped — fixture BDL game_id manquante, rerun nécessaire avec game_id live valide",
-    "last_updated": "2026-05-15T16:33:00.000Z"
+    "validation_note": "audit 2026-05-19 — endpoint OK",
+    "last_updated": "2026-05-19T14:12:00.000Z"
   },
   {
     "num": 155,
