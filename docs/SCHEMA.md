@@ -12,6 +12,7 @@
 |--------|-----------|
 | `non_testé` | **Défaut.** Jamais touché, aucun test effectué. |
 | `validé` | Testé et confirmé OK contre la source de vérité (nba.com ou équivalent). |
+| `validated_slow` | Fonctionnel, toutes assertions passent, mais latence > 5 s. Cache long requis en relais. |
 | `dégradé` | Exploitable mais sans double-validation : donnée probablement juste, pas confirmée. |
 | `bloqué` | Non fournissable en gratuit — endpoint payant ou inexistant. |
 | `out_of_scope` | Retiré du périmètre du PoC courant, délibérément. |

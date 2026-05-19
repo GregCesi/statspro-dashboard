@@ -605,6 +605,7 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
 /* poc_status */
 .pill-poc-non_teste  { background: var(--line-soft);    color: var(--ink-soft); }
 .pill-poc-valide     { background: var(--green-soft);   color: var(--green-deep); }
+.pill-poc-validated_slow { background: var(--orange-soft); color: var(--orange-deep); }
 .pill-poc-degrade    { background: var(--yellow-soft);  color: var(--yellow-deep); }
 .pill-poc-bloque     { background: var(--red-soft);     color: var(--red-deep); }
 .pill-poc-out        { background: var(--line-soft);    color: var(--ink-muted); font-style: italic; }
@@ -870,7 +871,7 @@ const FAISAB_ORDER = ['Une seule API','Combinaison','Aucune'];
 const COUT_ORDER = ['gratuit','freemium','payant','indéterminé'];
 const EFFORT_ORDER = ['trivial','modéré','lourd','indéterminé'];
 const TYPE_ORDER = ['Pre-match','Live'];
-const POC_STATUS_ORDER = ['non_testé','validé','dégradé','bloqué','out_of_scope'];
+const POC_STATUS_ORDER = ['non_testé','validé','validated_slow','dégradé','bloqué','out_of_scope'];
 const DATA_QUALITY_ORDER = ['unknown','juste','approximatif','incomplet'];
 function applyOrder(axis, items) {
   const orders = {vague:VAGUE_ORDER, faisabilite:FAISAB_ORDER, cout:COUT_ORDER, effort:EFFORT_ORDER, type:TYPE_ORDER, poc_status:POC_STATUS_ORDER, data_quality:DATA_QUALITY_ORDER};
@@ -1176,8 +1177,8 @@ function pillFor(col, val) {
     return `<span class="pill pill-fourn" data-f="${escapeHtml(val)}">${escapeHtml(val)}</span>`;
   }
   if (col === 'poc_status') {
-    const cls = {'non_testé':'non_teste','validé':'valide','dégradé':'degrade','bloqué':'bloque','out_of_scope':'out'}[val] || 'non_teste';
-    const label = {'non_testé':'non testé','validé':'validé','dégradé':'dégradé','bloqué':'bloqué','out_of_scope':'out of scope'}[val] || val;
+    const cls = {'non_testé':'non_teste','validé':'valide','validated_slow':'validated_slow','dégradé':'degrade','bloqué':'bloque','out_of_scope':'out'}[val] || 'non_teste';
+    const label = {'non_testé':'non testé','validé':'validé','validated_slow':'validé (lent)','dégradé':'dégradé','bloqué':'bloqué','out_of_scope':'out of scope'}[val] || val;
     return `<span class="pill pill-poc-${cls}">${escapeHtml(label)}</span>`;
   }
   if (col === 'data_quality') {
@@ -1252,6 +1253,7 @@ function buildTableBody(f) {
           <label>Statut PoC<select class="edit-poc">
             <option value="non_testé">non testé</option>
             <option value="validé">validé</option>
+            <option value="validated_slow">validé (lent)</option>
             <option value="dégradé">dégradé</option>
             <option value="bloqué">bloqué</option>
             <option value="out_of_scope">out of scope</option>
@@ -1451,7 +1453,7 @@ Outil de pilotage PoC NBA : 163 données candidates filtrées, suivies et export
 Objectif : identifier les données fournissables en gratuit via API publiques (NBA Stats, etc.).
 
 ## Sémantique des champs PoC
-- **poc_status** : \`non_testé\` | \`validé\` | \`dégradé\` | \`bloqué\` | \`out_of_scope\`
+- **poc_status** : \`non_testé\` | \`validé\` | \`validated_slow\` | \`dégradé\` | \`bloqué\` | \`out_of_scope\`
 - **data_quality** : \`unknown\` | \`juste\` (écart 0% vs nba.com) | \`approximatif\` | \`incomplet\`
 - **validation_note** : contexte court du test (≤200 car.)
 
