@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # scripts/apply_patch.py
 # Applique un fichier patch JSON sur data/dashboard.json.
+# Champs patchables : data_status, data_quality, validation_note.
+# audit_status est refusé silencieusement (réservé à sync_dashboard.py).
 # Usage : python3 scripts/apply_patch.py <chemin_patch.json>
 
 import json
@@ -37,7 +39,10 @@ def main():
             print(f"  WARN num={num} introuvable dans dashboard.json — ignoré")
             continue
         row = index[num]
-        for field in ("poc_status", "data_quality", "validation_note"):
+        # audit_status est réservé à sync_dashboard.py — refus silencieux avec warning
+        if "audit_status" in p:
+            print(f"  WARN num={num} : audit_status ignoré (réservé à sync_dashboard.py)")
+        for field in ("data_status", "data_quality", "validation_note"):
             if field in p:
                 row[field] = p[field]
         row["last_updated"] = p.get("last_updated") or datetime.now(timezone.utc).isoformat()

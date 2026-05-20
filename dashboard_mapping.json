@@ -1,0 +1,742 @@
+{
+  "mapping": {
+    "ARB-001": {
+      "endpoints": []
+    },
+    "ARB-002": {
+      "endpoints": []
+    },
+    "ARB-003": {
+      "endpoints": []
+    },
+    "ARB-004": {
+      "endpoints": []
+    },
+    "BET-001": {
+      "endpoints": [
+        "/theodds/odds/h2h"
+      ]
+    },
+    "BET-002": {
+      "endpoints": [
+        "/theodds/odds/h2h"
+      ]
+    },
+    "BET-003": {
+      "endpoints": [
+        "/theodds/odds/h2h"
+      ]
+    },
+    "BET-004": {
+      "endpoints": [
+        "/theodds/odds/h2h"
+      ]
+    },
+    "BET-005": {
+      "endpoints": []
+    },
+    "BET-006": {
+      "endpoints": []
+    },
+    "BET-007": {
+      "endpoints": []
+    },
+    "BET-008": {
+      "endpoints": [
+        "/theodds/odds/spreads"
+      ]
+    },
+    "BET-009": {
+      "endpoints": []
+    },
+    "BET-010": {
+      "endpoints": []
+    },
+    "CLAS-001": {
+      "endpoints": [
+        "/combined/classement/conference-rank"
+      ]
+    },
+    "CLAS-002": {
+      "endpoints": [
+        "/combined/classement/win-loss"
+      ]
+    },
+    "CLAS-003": {
+      "endpoints": [
+        "/nba-stats/classement/home-record"
+      ]
+    },
+    "CLAS-004": {
+      "endpoints": [
+        "/nba-stats/classement/road-record"
+      ]
+    },
+    "CLAS-005": {
+      "endpoints": [
+        "/nba-stats/classement/conference-games-back"
+      ]
+    },
+    "CLAS-006": {
+      "endpoints": [
+        "/nba-stats/classement/games-back-playoffs"
+      ]
+    },
+    "CLAS-007": {
+      "endpoints": [
+        "/nba-stats/classement/games-back-playin"
+      ]
+    },
+    "CLAS-008": {
+      "endpoints": [
+        "/nba-stats/classement/division-rank"
+      ]
+    },
+    "CLAS-009": {
+      "endpoints": [
+        "/nba-stats/classement/playoff-projection"
+      ]
+    },
+    "CLAS-010": {
+      "endpoints": []
+    },
+    "CLAS-011": {
+      "endpoints": [
+        "/nba-stats/classement/historical-standings"
+      ]
+    },
+    "CLAS-012": {
+      "endpoints": [
+        "/combined/classement/conference-standings"
+      ]
+    },
+    "CLAS-013": {
+      "endpoints": [
+        "/combined/classement/conference-standings"
+      ]
+    },
+    "DEF-001": {
+      "endpoints": [
+        "/nba-stats/defense/by-position"
+      ]
+    },
+    "DEF-002": {
+      "endpoints": [
+        "/nba-stats/defense/matchup"
+      ]
+    },
+    "DEF-003": {
+      "endpoints": []
+    },
+    "DEF-004": {
+      "endpoints": []
+    },
+    "DEF-005": {
+      "endpoints": []
+    },
+    "FAT-001": {
+      "endpoints": [
+        "/nba-stats/fatigue/last-game-city"
+      ]
+    },
+    "FAT-002": {
+      "endpoints": []
+    },
+    "FAT-003": {
+      "endpoints": []
+    },
+    "FAT-004": {
+      "endpoints": [
+        "/nba-stats/fatigue/rest-days-since-last"
+      ]
+    },
+    "FAT-005": {
+      "endpoints": [
+        "/nba-stats/fatigue/games-in-7days"
+      ]
+    },
+    "FAT-006": {
+      "endpoints": [
+        "/nba-stats/fatigue/games-in-14days"
+      ]
+    },
+    "FAT-007": {
+      "endpoints": [
+        "/nba-stats/fatigue/game-local-time"
+      ]
+    },
+    "FAT-008": {
+      "endpoints": [
+        "/nba-stats/fatigue/late-games"
+      ]
+    },
+    "H2H-001": {
+      "endpoints": [
+        "/combined/h2h/last-scores"
+      ]
+    },
+    "H2H-002": {
+      "endpoints": [
+        "/nba-stats/h2h/quarter-scores"
+      ]
+    },
+    "H2H-003": {
+      "endpoints": [
+        "/nba-stats/h2h/box-score"
+      ]
+    },
+    "H2H-004": {
+      "endpoints": [
+        "/nba-stats/h2h/lineup"
+      ]
+    },
+    "H2H-005": {
+      "endpoints": [
+        "/nba-stats/h2h/absences"
+      ]
+    },
+    "H2H-006": {
+      "endpoints": [
+        "/nba-stats/h2h/historical-standings"
+      ]
+    },
+    "H2H-007": {
+      "endpoints": [
+        "/nba-stats/h2h/playoff-scores"
+      ]
+    },
+    "H2H-008": {
+      "endpoints": [
+        "/nba-stats/h2h/playoff-quarter-scores"
+      ]
+    },
+    "H2H-009": {
+      "endpoints": [
+        "/nba-stats/h2h/playoff-series"
+      ]
+    },
+    "H2H-010": {
+      "endpoints": [
+        "/nba-stats/h2h/pace"
+      ]
+    },
+    "LIVE-001": {
+      "endpoints": [
+        "/nba-stats/live/team-score"
+      ]
+    },
+    "LIVE-002": {
+      "endpoints": [
+        "/nba-stats/live/quarter-scores"
+      ]
+    },
+    "LIVE-003": {
+      "endpoints": [
+        "/nba-stats/live/fast-break-points"
+      ]
+    },
+    "LIVE-004": {
+      "endpoints": [
+        "/combined/live/turnovers"
+      ]
+    },
+    "LIVE-005": {
+      "endpoints": [
+        "/combined/live/offensive-rebounds"
+      ]
+    },
+    "LIVE-006": {
+      "endpoints": [
+        "/combined/live/defensive-rebounds"
+      ]
+    },
+    "LIVE-007": {
+      "endpoints": [
+        "/nba-stats/live/fouls-per-quarter"
+      ]
+    },
+    "LIVE-008": {
+      "endpoints": [
+        "/bdl/live/timeouts-remaining"
+      ]
+    },
+    "LIVE-009": {
+      "endpoints": []
+    },
+    "LIVE-010": {
+      "endpoints": [
+        "/nba-stats/live/player-points"
+      ]
+    },
+    "LIVE-011": {
+      "endpoints": [
+        "/nba-stats/live/player-rebounds"
+      ]
+    },
+    "LIVE-012": {
+      "endpoints": [
+        "/nba-stats/live/player-assists"
+      ]
+    },
+    "LIVE-013": {
+      "endpoints": [
+        "/nba-stats/live/player-blocks"
+      ]
+    },
+    "LIVE-014": {
+      "endpoints": [
+        "/nba-stats/live/player-shots"
+      ]
+    },
+    "LIVE-015": {
+      "endpoints": [
+        "/nba-stats/live/player-fouls"
+      ]
+    },
+    "LIVE-016": {
+      "endpoints": [
+        "/nba-stats/live/player-minutes"
+      ]
+    },
+    "LIVE-017": {
+      "endpoints": []
+    },
+    "PACE-001": {
+      "endpoints": [
+        "/nba-stats/pace/team-pace"
+      ]
+    },
+    "PACE-002": {
+      "endpoints": [
+        "/nba-stats/pace/team-pace-rolling"
+      ]
+    },
+    "PACE-003": {
+      "endpoints": [
+        "/nba-stats/pace/h2h-pace"
+      ]
+    },
+    "PACE-004": {
+      "endpoints": [
+        "/nba-stats/pace/possession-time"
+      ]
+    },
+    "PACE-005": {
+      "endpoints": [
+        "/nba-stats/pace/transition-offense"
+      ]
+    },
+    "PACE-006": {
+      "endpoints": [
+        "/nba-stats/pace/transition-defense"
+      ]
+    },
+    "PACE-007": {
+      "endpoints": [
+        "/nba-stats/pace/offensive-rebounds"
+      ]
+    },
+    "PACE-008": {
+      "endpoints": [
+        "/nba-stats/pace/second-chance-points"
+      ]
+    },
+    "PACE-009": {
+      "endpoints": [
+        "/nba-stats/pace/turnovers"
+      ]
+    },
+    "PACE-010": {
+      "endpoints": [
+        "/nba-stats/pace/steals"
+      ]
+    },
+    "PACE-011": {
+      "endpoints": [
+        "/nba-stats/pace/blocks"
+      ]
+    },
+    "PACE-012": {
+      "endpoints": [
+        "/nba-stats/pace/pace-home-away"
+      ]
+    },
+    "PACE-013": {
+      "endpoints": [
+        "/nba-stats/pace/pace-b2b"
+      ]
+    },
+    "PACE-014": {
+      "endpoints": []
+    },
+    "RES-001": {
+      "endpoints": [
+        "/nba-stats/resultats/game-scores"
+      ]
+    },
+    "RES-002": {
+      "endpoints": [
+        "/nba-stats/resultats/quarter-scores"
+      ]
+    },
+    "RES-003": {
+      "endpoints": [
+        "/nba-stats/resultats/quarter-results"
+      ]
+    },
+    "RES-004": {
+      "endpoints": [
+        "/combined/resultats/match-opponent"
+      ]
+    },
+    "RES-005": {
+      "endpoints": [
+        "/combined/resultats/match-location"
+      ]
+    },
+    "RES-006": {
+      "endpoints": [
+        "/nba-stats/resultats/opponent-standing"
+      ]
+    },
+    "RES-007": {
+      "endpoints": [
+        "/nba-stats/resultats/game-presence"
+      ]
+    },
+    "RES-008": {
+      "endpoints": [
+        "/combined/resultats/match-datetime"
+      ]
+    },
+    "RES-009": {
+      "endpoints": [
+        "/nba-stats/resultats/rest-days"
+      ]
+    },
+    "RES-010": {
+      "endpoints": [
+        "/combined/resultats/back-to-back"
+      ]
+    },
+    "RES-011": {
+      "endpoints": [
+        "/nba-stats/resultats/back-to-back-record"
+      ]
+    },
+    "RES-012": {
+      "endpoints": [
+        "/nba-stats/resultats/record-by-rest-days"
+      ]
+    },
+    "ROST-001": {
+      "endpoints": []
+    },
+    "ROST-002": {
+      "endpoints": []
+    },
+    "ROST-003": {
+      "endpoints": []
+    },
+    "ROST-004": {
+      "endpoints": []
+    },
+    "ROST-005": {
+      "endpoints": []
+    },
+    "ROST-006": {
+      "endpoints": [
+        "/nba-stats/roster/projected-minutes"
+      ]
+    },
+    "ROST-007": {
+      "endpoints": [
+        "/nba-stats/roster/coach-rotation"
+      ]
+    },
+    "ROST-008": {
+      "endpoints": [
+        "/nba-stats/roster/minutes-by-position"
+      ]
+    },
+    "ROST-009": {
+      "endpoints": [
+        "/nba-stats/roster/bench-points-pct"
+      ]
+    },
+    "ROST-010": {
+      "endpoints": [
+        "/nba-stats/roster/bench-avg-stats"
+      ]
+    },
+    "ROST-011": {
+      "endpoints": [
+        "/nba-stats/roster/bench-minutes"
+      ]
+    },
+    "ROST-012": {
+      "endpoints": [
+        "/nba-stats/roster/bench-home-away"
+      ]
+    },
+    "ROST-013": {
+      "endpoints": [
+        "/nba-stats/roster/bench-b2b"
+      ]
+    },
+    "ROST-014": {
+      "endpoints": []
+    },
+    "STAT-001": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/points"
+      ]
+    },
+    "STAT-002": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/rebounds"
+      ]
+    },
+    "STAT-003": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/assists"
+      ]
+    },
+    "STAT-004": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/minutes"
+      ]
+    },
+    "STAT-005": {
+      "endpoints": [
+        "/combined/stats-joueur/plus-minus"
+      ]
+    },
+    "STAT-006": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/two-point-shots"
+      ]
+    },
+    "STAT-007": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/three-point-shots"
+      ]
+    },
+    "STAT-008": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/free-throws"
+      ]
+    },
+    "STAT-009": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/fouls"
+      ]
+    },
+    "STAT-010": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/fouls-drawn"
+      ]
+    },
+    "STAT-011": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/blocks"
+      ]
+    },
+    "STAT-012": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/steals"
+      ]
+    },
+    "STAT-013": {
+      "endpoints": [
+        "/combined/stats-joueur/true-shooting"
+      ]
+    },
+    "STAT-014": {
+      "endpoints": [
+        "/combined/stats-joueur/usage-rate"
+      ]
+    },
+    "STAT-015": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/contested-shots"
+      ]
+    },
+    "STAT-016": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/shot-chart"
+      ]
+    },
+    "STAT-017": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/shot-chart-vs"
+      ]
+    },
+    "STAT-018": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/touches"
+      ]
+    },
+    "STAT-019": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/synergy/pnr-ball-handler"
+      ]
+    },
+    "STAT-020": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/synergy/pnr-screener"
+      ]
+    },
+    "STAT-021": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/points-by-quarter"
+      ]
+    },
+    "STAT-022": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/clutch"
+      ]
+    },
+    "STAT-023": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/b2b-stats"
+      ]
+    },
+    "STAT-024": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/starter-bench"
+      ]
+    },
+    "STAT-025": {
+      "endpoints": []
+    },
+    "STAT-026": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/lineups"
+      ]
+    },
+    "STAT-027": {
+      "endpoints": []
+    },
+    "STAT-028": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/vs-opponent"
+      ]
+    },
+    "STAT-029": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/h2h-lineups"
+      ]
+    },
+    "STAT-030": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/matchup-vs-defenders"
+      ]
+    },
+    "STAT-031": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/pre-post-allstar"
+      ]
+    },
+    "STAT-032": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/season-comparison"
+      ]
+    },
+    "STAT-033": {
+      "endpoints": []
+    },
+    "STAT-034": {
+      "endpoints": []
+    },
+    "STAT-035": {
+      "endpoints": []
+    },
+    "STAT-036": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/league-leaders"
+      ]
+    },
+    "STAT-037": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/career-highs"
+      ]
+    },
+    "STAT-038": {
+      "endpoints": []
+    },
+    "STAT-039": {
+      "endpoints": []
+    },
+    "STAT-040": {
+      "endpoints": []
+    },
+    "STAT-041": {
+      "endpoints": [
+        "/nba-stats/stats-joueur/minutes-by-rest"
+      ]
+    },
+    "STYL-001": {
+      "endpoints": []
+    },
+    "STYL-002": {
+      "endpoints": []
+    },
+    "STYL-003": {
+      "endpoints": [
+        "/combined/coach/h2h"
+      ]
+    },
+    "STYL-004": {
+      "endpoints": []
+    },
+    "STYL-005": {
+      "endpoints": [
+        "/nba-stats/style-coach/lineup-stats"
+      ]
+    },
+    "STYL-006": {
+      "endpoints": [
+        "/nba-stats/style-coach/clutch"
+      ]
+    },
+    "STYL-007": {
+      "endpoints": []
+    },
+    "STYL-008": {
+      "endpoints": []
+    },
+    "STYL-009": {
+      "endpoints": []
+    },
+    "STYL-010": {
+      "endpoints": [
+        "/nba-stats/style-coach/three-point-shots"
+      ]
+    },
+    "STYL-011": {
+      "endpoints": [
+        "/nba-stats/style-coach/paint-shots"
+      ]
+    },
+    "STYL-012": {
+      "endpoints": [
+        "/nba-stats/style-coach/mid-range"
+      ]
+    },
+    "STYL-013": {
+      "endpoints": [
+        "/nba-stats/style-coach/shot-efficiency-offense"
+      ]
+    },
+    "STYL-014": {
+      "endpoints": [
+        "/nba-stats/style-coach/shot-efficiency-defense"
+      ]
+    },
+    "STYL-015": {
+      "endpoints": []
+    }
+  },
+  "schema_version": "1.0"
+}

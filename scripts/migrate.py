@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # scripts/migrate.py
 # Extrait le const DATA du HTML, applique les patches BDL, initialise les
-# champs PoC, écrit data/dashboard.json.
+# champs statut V2 (audit_status, data_status, data_quality), écrit data/dashboard.json.
 # Usage : python3 scripts/migrate.py
 
 import json
@@ -39,8 +39,13 @@ def apply_patches(data: list) -> list:
                       f"trouvé {row['fournisseur']!r} — patch appliqué quand même")
             row["fournisseur"] = p["fournisseur_new"]
 
-        # Champs PoC — initialisation
-        row["poc_status"] = "bloqué" if num in INJURY_BLOCKED else "non_testé"
+        # Champs statut V2 — initialisation
+        if num in INJURY_BLOCKED:
+            row["audit_status"] = "blocked_no_source"
+            row["data_status"] = "blocked_no_source"
+        else:
+            row["audit_status"] = None
+            row["data_status"] = "not_implemented"
         row["data_quality"] = "unknown"
         row["validation_note"] = ""
         row["last_updated"] = None
@@ -58,9 +63,9 @@ def main():
     print("Application des patches...")
     data = apply_patches(data)
 
-    injury_count = sum(1 for r in data if r["poc_status"] == "bloqué")
+    injury_count = sum(1 for r in data if r["audit_status"] == "blocked_no_source")
     patch_count = len(FOURNISSEUR_PATCHES)
-    print(f"  {patch_count} fournisseurs patchés, {injury_count} lignes bloquées")
+    print(f"  {patch_count} fournisseurs patchés, {injury_count} lignes blocked_no_source")
 
     OUTPUT_PATH.parent.mkdir(exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")

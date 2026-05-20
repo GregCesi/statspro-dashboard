@@ -26,7 +26,7 @@ Pas de Node en runtime, pas de build step, pas de DB.
 ### Données
 - **Source unique de vérité : `data/dashboard.json`.** 163 lignes externalisées hors du HTML.
 - **5 champs PoC sur chaque ligne** (depuis V2 dashboard, 2026-05-20) : `audit_status`, `data_status`, `data_quality`, `validation_note`, `last_updated`. Le champ historique `poc_status` est **supprimé** (éclaté entre `audit_status` et `data_status`).
-- **Identifiant stable `id: "CAT-NNN"`** sur chaque ligne, en plus du `num` historique (1-163). 9 préfixes : `STAT`, `RES`, `PACE`, `LIVE`, `ROST`, `CLAS`, `H2H`, `STYL`, `FAT`. Numérotation séquentielle dans la catégorie, ordre d'apparition dans le JSON.
+- **Identifiant stable `id: "CAT-NNN"`** sur chaque ligne, en plus du `num` historique (1-163). 12 préfixes : `ROST`, `RES`, `CLAS`, `PACE`, `H2H`, `FAT`, `STYL`, `DEF`, `STAT`, `LIVE`, `ARB`, `BET`. Numérotation séquentielle dans la catégorie, ordre d'apparition dans le JSON.
 - **Sémantique gelée dans `docs/SCHEMA.md`.** Toute modification de valeur admise passe par ce fichier, jamais par le code.
 - **Performance technique (latence, taux d'erreur) explicitement hors V1.** Si le besoin émerge, c'est du monitoring backend, pas un champ du JSON.
 
