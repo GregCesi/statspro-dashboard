@@ -602,13 +602,19 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
 .pill-fourn[data-f="Calcul interne"] { background: var(--emerald-soft); color: var(--emerald-deep); }
 .pill-fourn[data-f="Aucun"] { background: var(--red-soft); color: var(--red-deep); }
 .pill-fourn[data-f*=" + "] { background: var(--line-soft); color: var(--ink-soft); border: 1px dashed var(--line-strong); }
-/* poc_status */
-.pill-poc-non_teste  { background: var(--line-soft);    color: var(--ink-soft); }
-.pill-poc-valide     { background: var(--green-soft);   color: var(--green-deep); }
-.pill-poc-validated_slow { background: var(--orange-soft); color: var(--orange-deep); }
-.pill-poc-degrade    { background: var(--yellow-soft);  color: var(--yellow-deep); }
-.pill-poc-bloque     { background: var(--red-soft);     color: var(--red-deep); }
-.pill-poc-out        { background: var(--line-soft);    color: var(--ink-muted); font-style: italic; }
+/* audit_status */
+.pill-audit-validated      { background: var(--green-soft);   color: var(--green-deep); }
+.pill-audit-validated_slow { background: var(--orange-soft);  color: var(--orange-deep); }
+.pill-audit-bugged         { background: var(--pink-soft);    color: var(--pink-deep); }
+.pill-audit-unreliable     { background: var(--yellow-soft);  color: var(--yellow-deep); }
+.pill-audit-blocked        { background: var(--red-soft);     color: var(--red-deep); }
+.pill-audit-null           { background: var(--line-soft);    color: var(--ink-muted); }
+/* data_status */
+.pill-ds-live              { background: var(--emerald-soft); color: var(--emerald-deep); }
+.pill-ds-degraded          { background: var(--yellow-soft);  color: var(--yellow-deep); }
+.pill-ds-not_implemented   { background: var(--line-soft);    color: var(--ink-soft); }
+.pill-ds-deferred_v2       { background: var(--violet-soft);  color: var(--violet-deep); }
+.pill-ds-blocked           { background: var(--red-soft);     color: var(--red-deep); }
 /* data_quality */
 .pill-dq-unknown    { background: var(--line-soft);    color: var(--ink-muted); }
 .pill-dq-juste      { background: var(--emerald-soft); color: var(--emerald-deep); }
@@ -703,19 +709,34 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
     <div class="sub" id="kpi-gratuit-pct">—</div>
   </div>
   <div class="kpi green">
-    <div class="label">PoC validé</div>
-    <div class="value" id="kpi-poc-valide">—</div>
-    <div class="sub" id="kpi-poc-valide-pct">—</div>
+    <div class="label">Audit OK</div>
+    <div class="value" id="kpi-audit-ok">—</div>
+    <div class="sub" id="kpi-audit-ok-pct">—</div>
   </div>
   <div class="kpi red">
-    <div class="label">PoC bloqué</div>
-    <div class="value" id="kpi-poc-bloque">—</div>
-    <div class="sub" id="kpi-poc-bloque-pct">—</div>
+    <div class="label">Audit KO</div>
+    <div class="value" id="kpi-audit-ko">—</div>
+    <div class="sub" id="kpi-audit-ko-pct">—</div>
   </div>
   <div class="kpi blue">
-    <div class="label">Non testé</div>
-    <div class="value" id="kpi-poc-nonteste">—</div>
-    <div class="sub" id="kpi-poc-nonteste-pct">—</div>
+    <div class="label">Non audité</div>
+    <div class="value" id="kpi-audit-none">—</div>
+    <div class="sub" id="kpi-audit-none-pct">—</div>
+  </div>
+  <div class="kpi green">
+    <div class="label">Live</div>
+    <div class="value" id="kpi-ds-live">—</div>
+    <div class="sub" id="kpi-ds-live-pct">—</div>
+  </div>
+  <div class="kpi orange">
+    <div class="label">Dégradé</div>
+    <div class="value" id="kpi-ds-degraded">—</div>
+    <div class="sub" id="kpi-ds-degraded-pct">—</div>
+  </div>
+  <div class="kpi blue">
+    <div class="label">Pas implémenté</div>
+    <div class="value" id="kpi-ds-notimpl">—</div>
+    <div class="sub" id="kpi-ds-notimpl-pct">—</div>
   </div>
 </div>
 
@@ -726,7 +747,7 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
     <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Toggles rapides</h3>
     <div class="toggle-row">
       <button class="toggle-btn" data-toggle="quickwins"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Quick Wins seulement (V1)</button>
-      <button class="toggle-btn" data-toggle="hidev4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Cacher les bloqués (V4)</button>
+      <button class="toggle-btn" data-toggle="hidev4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Cacher V4 (out of scope)</button>
       <button class="toggle-btn" data-toggle="freeonly"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Gratuit seulement</button>
       <button class="toggle-btn" data-toggle="prematchonly"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pre-match seulement</button>
       <button class="toggle-btn" data-toggle="liveonly"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg> Live seulement</button>
@@ -757,8 +778,11 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
     <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Catégorie</h3>
     <div class="filter-group" data-axis="categorie"></div>
 
-    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 11 12 14 22 4"/></svg>Statut PoC</h3>
-    <div class="filter-group" data-axis="poc_status"></div>
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Statut audit</h3>
+    <div class="filter-group" data-axis="audit_status"></div>
+
+    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Statut produit</h3>
+    <div class="filter-group" data-axis="data_status"></div>
 
     <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Qualité donnée</h3>
     <div class="filter-group" data-axis="data_quality"></div>
@@ -831,7 +855,8 @@ let state = {
     type: new Set(),
     scope: new Set(),
     categorie: new Set(),
-    poc_status: new Set(),
+    audit_status: new Set(),
+    data_status: new Set(),
     data_quality: new Set()
   },
   sort: { col: 'num', dir: 'asc' }
@@ -845,7 +870,7 @@ try {
     state.num_min = saved.num_min || 1;
     state.num_max = saved.num_max || 163;
     state.toggles = Object.assign(state.toggles, saved.toggles || {});
-    if (saved.axes) for (const k in saved.axes) state.axes[k] = new Set(saved.axes[k]);
+    if (saved.axes) for (const k in saved.axes) { if (k in state.axes) state.axes[k] = new Set(saved.axes[k]); }
     if (saved.sort) state.sort = saved.sort;
   }
 } catch(e) {}
@@ -871,10 +896,22 @@ const FAISAB_ORDER = ['Une seule API','Combinaison','Aucune'];
 const COUT_ORDER = ['gratuit','freemium','payant','indéterminé'];
 const EFFORT_ORDER = ['trivial','modéré','lourd','indéterminé'];
 const TYPE_ORDER = ['Pre-match','Live'];
-const POC_STATUS_ORDER = ['non_testé','validé','validated_slow','dégradé','bloqué','out_of_scope'];
+const AUDIT_STATUS_ORDER = [null, 'validated', 'validated_slow', 'bugged_parsing', 'unreliable_upstream', 'blocked_no_source'];
+const DATA_STATUS_ORDER = ['live', 'degraded', 'not_implemented', 'deferred_v2', 'blocked_no_source'];
 const DATA_QUALITY_ORDER = ['unknown','juste','approximatif','incomplet'];
+
+const AXIS_LABELS = {
+  audit_status: { 'validated':'Validé', 'validated_slow':'Validé (lent)', 'bugged_parsing':'Bug parsing', 'unreliable_upstream':'Source instable', 'blocked_no_source':'Pas de source', 'null':'Non audité' },
+  data_status: { 'live':'Live', 'degraded':'Dégradé', 'not_implemented':'Pas implémenté', 'deferred_v2':'Reporté V2', 'blocked_no_source':'Bloqué (pas de source)' }
+};
+function axisLabel(axis, val) {
+  const m = AXIS_LABELS[axis];
+  if (!m) return val;
+  return m[val === null ? 'null' : String(val)] || val;
+}
+
 function applyOrder(axis, items) {
-  const orders = {vague:VAGUE_ORDER, faisabilite:FAISAB_ORDER, cout:COUT_ORDER, effort:EFFORT_ORDER, type:TYPE_ORDER, poc_status:POC_STATUS_ORDER, data_quality:DATA_QUALITY_ORDER};
+  const orders = {vague:VAGUE_ORDER, faisabilite:FAISAB_ORDER, cout:COUT_ORDER, effort:EFFORT_ORDER, type:TYPE_ORDER, audit_status:AUDIT_STATUS_ORDER, data_status:DATA_STATUS_ORDER, data_quality:DATA_QUALITY_ORDER};
   const o = orders[axis];
   if (!o) return items;
   return items.slice().sort((a,b) => o.indexOf(a) - o.indexOf(b));
@@ -900,7 +937,7 @@ function buildFilterUI() {
       });
       lbl.appendChild(cb);
       const txt = document.createElement('span');
-      txt.textContent = v;
+      txt.textContent = axisLabel(axis, v) ?? String(v ?? '');
       lbl.appendChild(txt);
       const c = document.createElement('span');
       c.className = 'count';
@@ -942,7 +979,8 @@ function updateAxisCounts(filtered) {
   document.querySelectorAll('.filter-group .count').forEach(span => {
     const axis = span.dataset.axis;
     const val = span.dataset.val;
-    const n = filtered.filter(d => d[axis] === val).length;
+    const v = val === 'null' ? null : val;
+    const n = filtered.filter(d => d[axis] === v).length;
     span.textContent = n;
     span.style.opacity = n === 0 ? 0.3 : 1;
   });
@@ -969,15 +1007,24 @@ function updateKPIs(f) {
   document.getElementById('kpi-quick-pct').textContent = pct(quick) + ' du résultat';
   document.getElementById('kpi-gratuit').textContent = grat;
   document.getElementById('kpi-gratuit-pct').textContent = pct(grat) + ' du résultat';
-  const valide   = f.filter(d => d.poc_status === 'validé').length;
-  const bloque   = f.filter(d => d.poc_status === 'bloqué').length;
-  const nonteste = f.filter(d => d.poc_status === 'non_testé').length;
-  document.getElementById('kpi-poc-valide').textContent = valide;
-  document.getElementById('kpi-poc-valide-pct').textContent = pct(valide) + ' du résultat';
-  document.getElementById('kpi-poc-bloque').textContent = bloque;
-  document.getElementById('kpi-poc-bloque-pct').textContent = pct(bloque) + ' du résultat';
-  document.getElementById('kpi-poc-nonteste').textContent = nonteste;
-  document.getElementById('kpi-poc-nonteste-pct').textContent = pct(nonteste) + ' du résultat';
+  const auditOk   = f.filter(d => d.audit_status === 'validated' || d.audit_status === 'validated_slow').length;
+  const auditKo   = f.filter(d => d.audit_status === 'bugged_parsing' || d.audit_status === 'unreliable_upstream' || d.audit_status === 'blocked_no_source').length;
+  const auditNone = f.filter(d => d.audit_status == null).length;
+  document.getElementById('kpi-audit-ok').textContent = auditOk;
+  document.getElementById('kpi-audit-ok-pct').textContent = pct(auditOk) + ' du résultat';
+  document.getElementById('kpi-audit-ko').textContent = auditKo;
+  document.getElementById('kpi-audit-ko-pct').textContent = pct(auditKo) + ' du résultat';
+  document.getElementById('kpi-audit-none').textContent = auditNone;
+  document.getElementById('kpi-audit-none-pct').textContent = pct(auditNone) + ' du résultat';
+  const dsLive    = f.filter(d => d.data_status === 'live').length;
+  const dsDeg     = f.filter(d => d.data_status === 'degraded').length;
+  const dsNotImpl = f.filter(d => d.data_status === 'not_implemented' || d.data_status === 'deferred_v2' || d.data_status === 'blocked_no_source').length;
+  document.getElementById('kpi-ds-live').textContent = dsLive;
+  document.getElementById('kpi-ds-live-pct').textContent = pct(dsLive) + ' du résultat';
+  document.getElementById('kpi-ds-degraded').textContent = dsDeg;
+  document.getElementById('kpi-ds-degraded-pct').textContent = pct(dsDeg) + ' du résultat';
+  document.getElementById('kpi-ds-notimpl').textContent = dsNotImpl;
+  document.getElementById('kpi-ds-notimpl-pct').textContent = pct(dsNotImpl) + ' du résultat';
 }
 
 // ─── Charts ───
@@ -1125,8 +1172,9 @@ const COLS = [
   { key: 'effort',      label: 'Effort',                       type: 'text' },
   { key: 'vague',       label: 'Vague',                        type: 'text' },
   { key: 'endpoint',    label: 'Endpoint(s)',                  type: 'text' },
-  { key: 'poc_status',  label: 'Statut PoC',                   type: 'text' },
-  { key: 'data_quality',label: 'Qualité',                       type: 'text' }
+  { key: 'audit_status',  label: 'Audit',     type: 'text' },
+  { key: 'data_status',   label: 'Produit',   type: 'text' },
+  { key: 'data_quality',  label: 'Qualité',   type: 'text' }
 ];
 
 function buildTableHead() {
@@ -1176,10 +1224,13 @@ function pillFor(col, val) {
   if (col === 'fournisseur') {
     return `<span class="pill pill-fourn" data-f="${escapeHtml(val)}">${escapeHtml(val)}</span>`;
   }
-  if (col === 'poc_status') {
-    const cls = {'non_testé':'non_teste','validé':'valide','validated_slow':'validated_slow','dégradé':'degrade','bloqué':'bloque','out_of_scope':'out'}[val] || 'non_teste';
-    const label = {'non_testé':'non testé','validé':'validé','validated_slow':'validé (lent)','dégradé':'dégradé','bloqué':'bloqué','out_of_scope':'out of scope'}[val] || val;
-    return `<span class="pill pill-poc-${cls}">${escapeHtml(label)}</span>`;
+  if (col === 'audit_status') {
+    const cls = {'validated':'validated','validated_slow':'validated_slow','bugged_parsing':'bugged','unreliable_upstream':'unreliable','blocked_no_source':'blocked'}[val] || 'null';
+    return `<span class="pill pill-audit-${cls}">${escapeHtml(axisLabel('audit_status', val) ?? '—')}</span>`;
+  }
+  if (col === 'data_status') {
+    const cls = {'live':'live','degraded':'degraded','not_implemented':'not_implemented','deferred_v2':'deferred_v2','blocked_no_source':'blocked'}[val] || 'not_implemented';
+    return `<span class="pill pill-ds-${cls}">${escapeHtml(axisLabel('data_status', val) ?? '—')}</span>`;
   }
   if (col === 'data_quality') {
     const cls = {'unknown':'unknown','juste':'juste','approximatif':'approx','incomplet':'incomplet'}[val] || 'unknown';
@@ -1241,7 +1292,8 @@ function buildTableBody(f) {
           <dt>Coût / Effort</dt><dd>${pillFor('cout', d.cout)} ${pillFor('effort', d.effort)} ${pillFor('vague', d.vague)}</dd>
           <dt>Notes</dt><dd>${escapeHtml(d.notes)}</dd>
           <dt>API source</dt><dd class="mono">${escapeHtml(d.api_source)}</dd>
-          <dt>Statut PoC</dt><dd>${pillFor('poc_status', d.poc_status)}</dd>
+          <dt>Statut audit</dt><dd>${pillFor('audit_status', d.audit_status)}</dd>
+          <dt>Statut produit</dt><dd>${pillFor('data_status', d.data_status)}</dd>
           <dt>Qualité donnée</dt><dd>${pillFor('data_quality', d.data_quality)}</dd>
           ${d.validation_note ? `<dt>Note validation</dt><dd>${escapeHtml(d.validation_note)}</dd>` : ''}
           ${d.last_updated ? `<dt>Mis à jour</dt><dd class="mono">${escapeHtml(d.last_updated)}</dd>` : ''}
@@ -1250,13 +1302,13 @@ function buildTableBody(f) {
           <button class="btn-edit" data-edit-btn="${d.num}" onclick="openEdit(${d.num})">✎ Éditer</button>
         </div>
         <div class="edit-form" id="edit-form-${d.num}">
-          <label>Statut PoC<select class="edit-poc">
-            <option value="non_testé">non testé</option>
-            <option value="validé">validé</option>
-            <option value="validated_slow">validé (lent)</option>
-            <option value="dégradé">dégradé</option>
-            <option value="bloqué">bloqué</option>
-            <option value="out_of_scope">out of scope</option>
+          <label>Statut audit ${pillFor('audit_status', d.audit_status)}</label>
+          <label>Statut produit<select class="edit-ds">
+            <option value="live">Live</option>
+            <option value="degraded">Dégradé</option>
+            <option value="not_implemented">Pas implémenté</option>
+            <option value="deferred_v2">Reporté V2</option>
+            <option value="blocked_no_source">Bloqué (pas de source)</option>
           </select></label>
           <label>Qualité donnée<select class="edit-dq">
             <option value="unknown">unknown</option>
@@ -1304,7 +1356,7 @@ try { edits = JSON.parse(localStorage.getItem(EDITS_KEY) || '{}'); } catch(e) { 
 function applyEditsToData() {
   DATA.forEach(d => {
     const e = edits[d.num];
-    if (e) { if (e.poc_status) d.poc_status = e.poc_status; if (e.data_quality) d.data_quality = e.data_quality; if (e.validation_note !== undefined) d.validation_note = e.validation_note; if (e.last_updated) d.last_updated = e.last_updated; }
+    if (e) { if (e.data_status) d.data_status = e.data_status; if (e.data_quality) d.data_quality = e.data_quality; if (e.validation_note !== undefined) d.validation_note = e.validation_note; if (e.last_updated) d.last_updated = e.last_updated; }
   });
 }
 
@@ -1331,7 +1383,7 @@ function openEdit(num) {
   if (!form) return;
   const d = DATA.find(x => x.num === num);
   if (!d) return;
-  form.querySelector('.edit-poc').value = d.poc_status || 'non_testé';
+  form.querySelector('.edit-ds').value = d.data_status || 'not_implemented';
   form.querySelector('.edit-dq').value = d.data_quality || 'unknown';
   form.querySelector('.edit-note').value = d.validation_note || '';
   form.style.display = 'flex';
@@ -1348,14 +1400,14 @@ function closeEdit(num) {
 function saveEdit(num) {
   const form = document.getElementById('edit-form-' + num);
   if (!form) return;
-  const poc_status     = form.querySelector('.edit-poc').value;
+  const data_status    = form.querySelector('.edit-ds').value;
   const data_quality   = form.querySelector('.edit-dq').value;
   const validation_note = form.querySelector('.edit-note').value.slice(0, 200);
   const last_updated   = new Date().toISOString();
-  edits[num] = { poc_status, data_quality, validation_note, last_updated };
+  edits[num] = { data_status, data_quality, validation_note, last_updated };
   try { localStorage.setItem(EDITS_KEY, JSON.stringify(edits)); } catch(e) {}
   const d = DATA.find(x => x.num === num);
-  if (d) { d.poc_status = poc_status; d.data_quality = data_quality; d.validation_note = validation_note; d.last_updated = last_updated; }
+  if (d) { d.data_status = data_status; d.data_quality = data_quality; d.validation_note = validation_note; d.last_updated = last_updated; }
   updateBadge();
   closeEdit(num);
   rerender();
@@ -1399,8 +1451,10 @@ fetch('./data/dashboard.json')
     applyEditsToData();
     updateBadge();
     DISTINCT = {};
-    ['vague','faisabilite','fournisseur','cout','effort','type','scope','categorie','poc_status','data_quality'].forEach(k => {
+    ['vague','faisabilite','fournisseur','cout','effort','type','scope','categorie','audit_status','data_status','data_quality'].forEach(k => {
       DISTINCT[k] = [...new Set(DATA.map(d => d[k]))].sort((a,b) => {
+        if (a === null) return -1;
+        if (b === null) return 1;
         if (k === 'vague') return a.localeCompare(b);
         return a.localeCompare(b, 'fr');
       });
@@ -1452,13 +1506,14 @@ function exportMarkdown() {
 Outil de pilotage PoC NBA : 163 données candidates filtrées, suivies et exportées à chaque cycle de PoC.
 Objectif : identifier les données fournissables en gratuit via API publiques (NBA Stats, etc.).
 
-## Sémantique des champs PoC
-- **poc_status** : \`non_testé\` | \`validé\` | \`validated_slow\` | \`dégradé\` | \`bloqué\` | \`out_of_scope\`
+## Sémantique des champs
+- **audit_status** : \`validated\` | \`validated_slow\` | \`bugged_parsing\` | \`unreliable_upstream\` | \`blocked_no_source\` | \`null\` (non audité)
+- **data_status** : \`live\` | \`degraded\` | \`not_implemented\` | \`deferred_v2\` | \`blocked_no_source\`
 - **data_quality** : \`unknown\` | \`juste\` (écart 0% vs nba.com) | \`approximatif\` | \`incomplet\`
 - **validation_note** : contexte court du test (≤200 car.)
 
 ## Prompt suggéré
-> Pour chaque ligne ci-dessous avec \`poc_status=bloqué\` ou \`non_testé\`, propose :
+> Pour chaque ligne ci-dessous avec \`data_status=not_implemented\` ou \`blocked_no_source\`, propose :
 > 1. Une alternative gratuite crédible (endpoint + source)
 > 2. Le niveau d'effort estimé (trivial / modéré / lourd)
 > 3. Les limites connues (quota, fraîcheur, fiabilité)
@@ -1475,7 +1530,7 @@ Objectif : identifier les données fournissables en gratuit via API publiques (N
 - **Faisabilité** : ${d.faisabilite} | **Fournisseur** : ${d.fournisseur}
 - **Coût** : ${d.cout} | **Effort** : ${d.effort} | **Vague** : ${d.vague}
 - **Endpoint** : ${d.endpoint || '—'}
-- **Statut PoC** : ${d.poc_status || 'non_testé'} | **Qualité** : ${d.data_quality || 'unknown'}${d.validation_note ? `
+- **Audit** : ${d.audit_status || 'non audité'} | **Produit** : ${d.data_status || '—'} | **Qualité** : ${d.data_quality || 'unknown'}${d.validation_note ? `
 - **Note** : ${d.validation_note}` : ''}
 - **Notes** : ${d.notes || '—'}
 
