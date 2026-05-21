@@ -1,7 +1,9 @@
 {
   "mapping": {
     "ARB-001": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/referees/assignments"
+      ]
     },
     "ARB-002": {
       "endpoints": []
@@ -98,7 +100,9 @@
       ]
     },
     "CLAS-010": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/draft/probabilities"
+      ]
     },
     "CLAS-011": {
       "endpoints": [
@@ -663,13 +667,17 @@
       ]
     },
     "STAT-038": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/franchise/leaders"
+      ]
     },
     "STAT-039": {
       "endpoints": []
     },
     "STAT-040": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/stats/dws"
+      ]
     },
     "STAT-041": {
       "endpoints": [
@@ -677,10 +685,14 @@
       ]
     },
     "STYL-001": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/coach/season-record"
+      ]
     },
     "STYL-002": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/coach/playoff-record"
+      ]
     },
     "STYL-003": {
       "endpoints": [
@@ -735,7 +747,9 @@
       ]
     },
     "STYL-015": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/coach/transition"
+      ]
     }
   },
   "schema_version": "1.0"
