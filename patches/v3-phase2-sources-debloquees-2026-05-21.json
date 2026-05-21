@@ -1,0 +1,38 @@
+{
+  "patches": [
+    {
+      "id": "ROST-001",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "V3 phase 2 sous-phase 2.1 (2026-05-21) — NBA Injury Report PDF officiel via package nbainjuries. Audit validated."
+    },
+    {
+      "id": "ROST-003",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "V3 phase 2 sous-phase 2.1 (2026-05-21) — NBA Injury Report PDF officiel via package nbainjuries. Audit validated."
+    },
+    {
+      "id": "ROST-004",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "V3 phase 2 sous-phase 2.1 (2026-05-21) — NBA Injury Report PDF officiel via package nbainjuries. Audit validated."
+    },
+    {
+      "id": "ROST-005",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "V3 phase 2 sous-phase 2.1 (2026-05-21) — NBA Injury Report PDF officiel via package nbainjuries. Audit validated."
+    },
+    {
+      "id": "ROST-002",
+      "data_status": "not_implemented",
+      "validation_note": "Source débloquée 2026-05-21 (recherche sources gratuites V3). RotoWire expected H-24/H-30 + NBA CDN confirmed T-30+. Posture 'expected vs confirmed' actée. Implémentation prévue V3 phase 2 sous-phase 2.2."
+    },
+    {
+      "id": "STAT-033",
+      "data_status": "not_implemented",
+      "validation_note": "Source débloquée 2026-05-21 (recherche sources gratuites V3). ProSportsTransactions via pro_sports_transactions + container Unflare obligatoire. Implémentation prévue V3 phase 2 sous-phase 2.3."
+    }
+  ]
+}
