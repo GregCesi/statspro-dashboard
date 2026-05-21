@@ -1,0 +1,44 @@
+{
+  "patches": [
+    {
+      "id": "BET-005",
+      "vague": "V5"
+    },
+    {
+      "id": "STAT-015",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "Synergy gratuit confirmé Spike A 20/05"
+    },
+    {
+      "id": "STAT-018",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "Tracking Second Spectrum gratuit confirmé Spike A 20/05"
+    },
+    {
+      "id": "STAT-019",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "Synergy gratuit confirmé Spike A 20/05"
+    },
+    {
+      "id": "STAT-020",
+      "data_status": "live",
+      "data_quality": "juste",
+      "validation_note": "Synergy gratuit confirmé Spike A 20/05"
+    },
+    {
+      "id": "STAT-016",
+      "data_status": "live",
+      "data_quality": "unknown",
+      "validation_note": "PoC — endpoint shotchartdetail déjà bloqué temporairement par NBA par le passé, à monitorer"
+    },
+    {
+      "id": "STAT-017",
+      "data_status": "live",
+      "data_quality": "unknown",
+      "validation_note": "PoC — idem STAT-016 + sample size faible (quelques matchs/saison vs même adversaire)"
+    }
+  ]
+}
