@@ -375,22 +375,6 @@ aside h3 svg { opacity: 0.6; }
 .reset-btn:hover { background: var(--red-soft); border-color: var(--red); color: var(--red-deep); }
 .export-btn:hover { background: var(--green-soft); border-color: var(--green); color: var(--green-deep); }
 
-.num-range { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.num-range input[type=number] {
-  width: 64px; padding: 6px 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: 12.5px;
-  font-variant-numeric: tabular-nums;
-  transition: all var(--transition);
-}
-.num-range input[type=number]:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-}
-.num-range span { color: var(--ink-muted); font-weight: 500; }
 
 /* ─── Main content ─── */
 section.main {
@@ -634,12 +618,11 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
 
 /* ─── Cells ─── */
 .donee-cell { max-width: 360px; line-height: 1.45; }
-.num-cell {
-  text-align: right;
+.id-cell {
   color: var(--ink-muted);
-  font-variant-numeric: tabular-nums;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11.5px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 </style>
 </head>
@@ -787,13 +770,6 @@ table.detail tbody tr.detail-row .detail-block dd.mono {
     <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Qualité donnée</h3>
     <div class="filter-group" data-axis="data_quality"></div>
 
-    <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>Numéro #</h3>
-    <div class="num-range">
-      <input type="number" id="num-min" min="1" max="163" value="1">
-      <span>→</span>
-      <input type="number" id="num-max" min="1" max="163" value="163">
-    </div>
-
     <button class="reset-btn" id="reset-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Réinitialiser tous les filtres</button>
     <button class="export-btn" id="export-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exporter CSV (filtré)</button>
     <button class="export-btn" id="export-ia-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Exporter pour IA (markdown)</button>
@@ -844,7 +820,6 @@ let DATA = [], TOTAL = 0;
 const STORAGE_KEY = 'statspro_dashboard_filters_v1';
 let state = {
   search: '',
-  num_min: 1, num_max: 163,
   toggles: { quickwins: false, hidev4: false, freeonly: false, prematchonly: false, liveonly: false, determined: false },
   axes: {
     vague: new Set(),
@@ -859,7 +834,7 @@ let state = {
     data_status: new Set(),
     data_quality: new Set()
   },
-  sort: { col: 'num', dir: 'asc' }
+  sort: { col: 'id', dir: 'asc' }
 };
 
 // Restaure depuis localStorage
@@ -867,8 +842,6 @@ try {
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
   if (saved) {
     state.search = saved.search || '';
-    state.num_min = saved.num_min || 1;
-    state.num_max = saved.num_max || 163;
     state.toggles = Object.assign(state.toggles, saved.toggles || {});
     if (saved.axes) for (const k in saved.axes) { if (k in state.axes) state.axes[k] = new Set(saved.axes[k]); }
     if (saved.sort) state.sort = saved.sort;
@@ -878,7 +851,6 @@ try {
 function persist() {
   const s = {
     search: state.search,
-    num_min: state.num_min, num_max: state.num_max,
     toggles: state.toggles,
     axes: Object.fromEntries(Object.entries(state.axes).map(([k,v]) => [k, [...v]])),
     sort: state.sort
@@ -951,10 +923,9 @@ function buildFilterUI() {
 
 function applyFilters() {
   return DATA.filter(d => {
-    if (d.num < state.num_min || d.num > state.num_max) return false;
     if (state.search) {
       const q = state.search.toLowerCase();
-      const hay = (d.donnee + ' ' + d.notes + ' ' + d.endpoint + ' ' + d.api_source).toLowerCase();
+      const hay = (d.id + ' ' + d.donnee + ' ' + d.notes + ' ' + d.endpoint + ' ' + d.api_source).toLowerCase();
       if (!hay.includes(q)) return false;
     }
     // toggles
@@ -1161,7 +1132,7 @@ function updateCharts(f) {
 
 // ─── Tableau détail ───
 const COLS = [
-  { key: 'num',         label: '#',           width: '40px',  type: 'num',    cls: 'num-cell' },
+  { key: 'id',          label: 'ID',          width: '80px',  type: 'text',   cls: 'id-cell' },
   { key: 'donnee',      label: 'Donnée',                       type: 'text',   cls: 'donee-cell' },
   { key: 'categorie',   label: 'Catégorie',                    type: 'text' },
   { key: 'type',        label: 'Type',                         type: 'text' },
@@ -1259,7 +1230,7 @@ function buildTableBody(f) {
   }
   sorted.forEach((d, i) => {
     const tr = document.createElement('tr');
-    tr.dataset.num = d.num;
+    tr.dataset.id = d.id;
     COLS.forEach(c => {
       const td = document.createElement('td');
       if (c.cls) td.className = c.cls;
@@ -1282,7 +1253,7 @@ function buildTableBody(f) {
       td.colSpan = COLS.length;
       td.innerHTML = `
         <div class="detail-block">
-          <dt>#</dt><dd>${d.num}</dd>
+          <dt>ID</dt><dd class="mono">${d.id}</dd>
           <dt>Donnée brute</dt><dd>${escapeHtml(d.donnee)}</dd>
           <dt>Catégorie</dt><dd>${escapeHtml(d.categorie)}</dd>
           <dt>Type / Scope</dt><dd>${escapeHtml(d.type)} · ${escapeHtml(d.scope)}</dd>
@@ -1299,9 +1270,9 @@ function buildTableBody(f) {
           ${d.last_updated ? `<dt>Mis à jour</dt><dd class="mono">${escapeHtml(d.last_updated)}</dd>` : ''}
         </div>
         <div class="edit-actions">
-          <button class="btn-edit" data-edit-btn="${d.num}" onclick="openEdit(${d.num})">✎ Éditer</button>
+          <button class="btn-edit" data-edit-btn="${d.id}" onclick="openEdit('${d.id}')">✎ Éditer</button>
         </div>
-        <div class="edit-form" id="edit-form-${d.num}">
+        <div class="edit-form" id="edit-form-${d.id}">
           <label>Statut audit ${pillFor('audit_status', d.audit_status)}</label>
           <label>Statut produit<select class="edit-ds">
             <option value="live">Live</option>
@@ -1318,8 +1289,8 @@ function buildTableBody(f) {
           </select></label>
           <label>Note validation (≤200 car.)<input type="text" class="edit-note" maxlength="200" placeholder="ex: game_id=0022400123, écart 0%, vs nba.com"></label>
           <div class="edit-form-btns">
-            <button class="btn-save" onclick="saveEdit(${d.num})">Enregistrer</button>
-            <button class="btn-cancel" onclick="closeEdit(${d.num})">Annuler</button>
+            <button class="btn-save" onclick="saveEdit('${d.id}')">Enregistrer</button>
+            <button class="btn-cancel" onclick="closeEdit('${d.id}')">Annuler</button>
           </div>
         </div>`;
       dr.appendChild(td);
@@ -1340,8 +1311,6 @@ function rerender() {
   buildTableBody(f);
   // sync UI
   document.getElementById('search').value = state.search;
-  document.getElementById('num-min').value = state.num_min;
-  document.getElementById('num-max').value = state.num_max;
   document.querySelectorAll('.toggle-btn').forEach(b => {
     b.classList.toggle('active', !!state.toggles[b.dataset.toggle]);
   });
@@ -1349,13 +1318,13 @@ function rerender() {
 }
 
 // ─── Édition inline ───
-const EDITS_KEY = 'dashboard_edits_v1';
+const EDITS_KEY = 'dashboard_edits_v2';
 let edits = {};
 try { edits = JSON.parse(localStorage.getItem(EDITS_KEY) || '{}'); } catch(e) { edits = {}; }
 
 function applyEditsToData() {
   DATA.forEach(d => {
-    const e = edits[d.num];
+    const e = edits[d.id];
     if (e) { if (e.data_status) d.data_status = e.data_status; if (e.data_quality) d.data_quality = e.data_quality; if (e.validation_note !== undefined) d.validation_note = e.validation_note; if (e.last_updated) d.last_updated = e.last_updated; }
   });
 }
@@ -1378,38 +1347,38 @@ document.addEventListener('click', e => {
   if (panel && !panel.contains(e.target) && !document.getElementById('edits-badge').contains(e.target)) panel.classList.remove('open');
 });
 
-function openEdit(num) {
-  const form = document.getElementById('edit-form-' + num);
+function openEdit(id) {
+  const form = document.getElementById('edit-form-' + id);
   if (!form) return;
-  const d = DATA.find(x => x.num === num);
+  const d = DATA.find(x => x.id === id);
   if (!d) return;
   form.querySelector('.edit-ds').value = d.data_status || 'not_implemented';
   form.querySelector('.edit-dq').value = d.data_quality || 'unknown';
   form.querySelector('.edit-note').value = d.validation_note || '';
   form.style.display = 'flex';
-  document.querySelector(`[data-edit-btn="${num}"]`).style.display = 'none';
+  document.querySelector(`[data-edit-btn="${id}"]`).style.display = 'none';
 }
 
-function closeEdit(num) {
-  const form = document.getElementById('edit-form-' + num);
+function closeEdit(id) {
+  const form = document.getElementById('edit-form-' + id);
   if (form) form.style.display = 'none';
-  const btn = document.querySelector(`[data-edit-btn="${num}"]`);
+  const btn = document.querySelector(`[data-edit-btn="${id}"]`);
   if (btn) btn.style.display = '';
 }
 
-function saveEdit(num) {
-  const form = document.getElementById('edit-form-' + num);
+function saveEdit(id) {
+  const form = document.getElementById('edit-form-' + id);
   if (!form) return;
   const data_status    = form.querySelector('.edit-ds').value;
   const data_quality   = form.querySelector('.edit-dq').value;
   const validation_note = form.querySelector('.edit-note').value.slice(0, 200);
   const last_updated   = new Date().toISOString();
-  edits[num] = { data_status, data_quality, validation_note, last_updated };
+  edits[id] = { data_status, data_quality, validation_note, last_updated };
   try { localStorage.setItem(EDITS_KEY, JSON.stringify(edits)); } catch(e) {}
-  const d = DATA.find(x => x.num === num);
+  const d = DATA.find(x => x.id === id);
   if (d) { d.data_status = data_status; d.data_quality = data_quality; d.validation_note = validation_note; d.last_updated = last_updated; }
   updateBadge();
-  closeEdit(num);
+  closeEdit(id);
   rerender();
 }
 
@@ -1419,7 +1388,7 @@ function exportPatch() {
   const patch = {
     exported_at: new Date().toISOString(),
     count: n,
-    patches: Object.entries(edits).map(([num, e]) => ({ num: parseInt(num), ...e }))
+    patches: Object.entries(edits).map(([id, e]) => ({ id, ...e }))
   };
   const json = JSON.stringify(patch, null, 2);
   try { navigator.clipboard.writeText(json); } catch(e) {}
@@ -1465,14 +1434,6 @@ document.getElementById('search').addEventListener('input', (e) => {
   state.search = e.target.value;
   rerender();
 });
-document.getElementById('num-min').addEventListener('input', (e) => {
-  state.num_min = Math.max(1, Math.min(163, parseInt(e.target.value) || 1));
-  rerender();
-});
-document.getElementById('num-max').addEventListener('input', (e) => {
-  state.num_max = Math.max(1, Math.min(163, parseInt(e.target.value) || 163));
-  rerender();
-});
 document.querySelectorAll('.toggle-btn').forEach(b => {
   b.addEventListener('click', () => {
     state.toggles[b.dataset.toggle] = !state.toggles[b.dataset.toggle];
@@ -1481,10 +1442,9 @@ document.querySelectorAll('.toggle-btn').forEach(b => {
 });
 document.getElementById('reset-btn').addEventListener('click', () => {
   state.search = '';
-  state.num_min = 1; state.num_max = 163;
   for (const k in state.toggles) state.toggles[k] = false;
   for (const k in state.axes) state.axes[k] = new Set();
-  state.sort = { col: 'num', dir: 'asc' };
+  state.sort = { col: 'id', dir: 'asc' };
   buildFilterUI();
   rerender();
 });
@@ -1525,7 +1485,7 @@ Objectif : identifier les données fournissables en gratuit via API publiques (N
 
 `;
   f.forEach(d => {
-    md += `### #${d.num} — ${d.donnee}
+    md += `### ${d.id} — ${d.donnee}
 - **Catégorie** : ${d.categorie} | **Type** : ${d.type} | **Scope** : ${d.scope}
 - **Faisabilité** : ${d.faisabilite} | **Fournisseur** : ${d.fournisseur}
 - **Coût** : ${d.cout} | **Effort** : ${d.effort} | **Vague** : ${d.vague}
@@ -1547,7 +1507,7 @@ Objectif : identifier les données fournissables en gratuit via API publiques (N
 
 document.getElementById('export-btn').addEventListener('click', () => {
   const f = applyFilters();
-  const cols = ['num','donnee','categorie','type','scope','faisabilite','fournisseur','endpoint','cout','effort','vague','notes','api_source'];
+  const cols = ['id','donnee','categorie','type','scope','faisabilite','fournisseur','endpoint','cout','effort','vague','notes','api_source'];
   const escape = (s) => {
     s = String(s||'');
     if (s.includes(';') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';

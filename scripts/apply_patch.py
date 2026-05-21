@@ -27,21 +27,21 @@ def main():
     patch = json.loads(patch_path.read_text(encoding="utf-8"))
     patches = patch.get("patches", patch) if isinstance(patch, dict) else patch
     if isinstance(patches, dict):
-        patches = [{"num": int(k), **v} for k, v in patches.items()]
+        patches = [{"id": k, **v} for k, v in patches.items()]
 
     data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    index = {d["num"]: d for d in data}
+    index = {d["id"]: d for d in data}
 
     applied = 0
     for p in patches:
-        num = p.get("num")
-        if num not in index:
-            print(f"  WARN num={num} introuvable dans dashboard.json — ignoré")
+        row_id = p.get("id")
+        if row_id not in index:
+            print(f"  WARN id={row_id} introuvable dans dashboard.json — ignoré")
             continue
-        row = index[num]
+        row = index[row_id]
         # audit_status est réservé à sync_dashboard.py — refus silencieux avec warning
         if "audit_status" in p:
-            print(f"  WARN num={num} : audit_status ignoré (réservé à sync_dashboard.py)")
+            print(f"  WARN id={row_id} : audit_status ignoré (réservé à sync_dashboard.py)")
         for field in ("data_status", "data_quality", "validation_note"):
             if field in p:
                 row[field] = p[field]
