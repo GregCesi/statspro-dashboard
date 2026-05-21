@@ -78,6 +78,20 @@ Qualité de la donnée observée lors du test. Inchangé depuis V1.
 
 ---
 
+## `vague`
+
+Vague de livraison de la donnée. Détermine le cycle de PoC dans lequel la ligne sera traitée.
+
+| Valeur | Définition |
+|--------|-----------|
+| `V1` | **Périmètre initial.** Données fondamentales validées et livrées au premier cycle de PoC. |
+| `V2` | **Deuxième cycle.** Données complémentaires intégrées après la clôture de V1. |
+| `V3` | **Troisième cycle.** Données avancées ou nécessitant des sources additionnelles. |
+| `V4` | **Quatrième cycle.** Données à coût ou complexité élevée, repoussées des cycles précédents. |
+| `V5` | **Phase payante.** Données dont l'accès gratuit est confirmé impossible. Réservées pour une phase commerciale ultérieure. Peuvent être repoussées en V6 si une donnée gratuite manquante émerge lors de l'intégration UI. |
+
+---
+
 ## ID stables `CAT-NNN`
 
 Identifiant stable et lisible attribué à chaque ligne du dashboard. Introduit en V2 à côté du `num` historique (1-163) qui est préservé.
