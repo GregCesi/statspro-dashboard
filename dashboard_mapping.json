@@ -130,13 +130,19 @@
       ]
     },
     "DEF-003": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/stats-joueur/matchup-vs-defenders"
+      ]
     },
     "DEF-004": {
-      "endpoints": []
+      "endpoints": [
+        "/lineups/defender-profile"
+      ]
     },
     "DEF-005": {
-      "endpoints": []
+      "endpoints": [
+        "/lineups/defender-impact"
+      ]
     },
     "FAT-001": {
       "endpoints": [
@@ -434,19 +440,29 @@
       ]
     },
     "ROST-001": {
-      "endpoints": []
+      "endpoints": [
+        "/injuries/report/{report_date}"
+      ]
     },
     "ROST-002": {
-      "endpoints": []
+      "endpoints": [
+        "/lineups/starting-five"
+      ]
     },
     "ROST-003": {
-      "endpoints": []
+      "endpoints": [
+        "/injuries/out/{report_date}"
+      ]
     },
     "ROST-004": {
-      "endpoints": []
+      "endpoints": [
+        "/injuries/uncertain/{report_date}"
+      ]
     },
     "ROST-005": {
-      "endpoints": []
+      "endpoints": [
+        "/injuries/available/{report_date}/{team_id}"
+      ]
     },
     "ROST-006": {
       "endpoints": [
@@ -489,7 +505,9 @@
       ]
     },
     "ROST-014": {
-      "endpoints": []
+      "endpoints": [
+        "/lineups/bench-absence"
+      ]
     },
     "STAT-001": {
       "endpoints": [
@@ -612,7 +630,9 @@
       ]
     },
     "STAT-025": {
-      "endpoints": []
+      "endpoints": [
+        "/lineups/teammate-split"
+      ]
     },
     "STAT-026": {
       "endpoints": [
@@ -620,7 +640,9 @@
       ]
     },
     "STAT-027": {
-      "endpoints": []
+      "endpoints": [
+        "/lineups/usage-contextual"
+      ]
     },
     "STAT-028": {
       "endpoints": [
@@ -648,7 +670,9 @@
       ]
     },
     "STAT-033": {
-      "endpoints": []
+      "endpoints": [
+        "/injuries/history"
+      ]
     },
     "STAT-034": {
       "endpoints": []
@@ -672,7 +696,9 @@
       ]
     },
     "STAT-039": {
-      "endpoints": []
+      "endpoints": [
+        "/nba-stats/all-time/leaders"
+      ]
     },
     "STAT-040": {
       "endpoints": [
@@ -700,7 +726,9 @@
       ]
     },
     "STYL-004": {
-      "endpoints": []
+      "endpoints": [
+        "/combined/coach/h2h-boxscores"
+      ]
     },
     "STYL-005": {
       "endpoints": [
