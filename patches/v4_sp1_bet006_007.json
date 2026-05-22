@@ -1,0 +1,16 @@
+{
+  "patches": [
+    {
+      "id": "BET-006",
+      "data_status": "blocked_no_source",
+      "data_quality": null,
+      "validation_note": "données propriétaires bookmakers FR (nombre de parieurs), jamais publiées gratuitement ni accessibles via API connue payante. Sortie définitive du scope V4 et V6 (acté V4-SP1, 2026-05-22)."
+    },
+    {
+      "id": "BET-007",
+      "data_status": "blocked_no_source",
+      "data_quality": null,
+      "validation_note": "données propriétaires bookmakers FR (montant misé), jamais publiées gratuitement ni accessibles via API connue payante. Sortie définitive du scope V4 et V6 (acté V4-SP1, 2026-05-22)."
+    }
+  ]
+}
