@@ -5,3 +5,4 @@ __pycache__/
 exports/*.json
 exports/*.md
 !exports/.gitkeep
+sync_report_*.md
